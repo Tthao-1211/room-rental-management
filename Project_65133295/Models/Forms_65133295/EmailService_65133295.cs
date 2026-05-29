@@ -9,6 +9,21 @@ namespace Project_65133295.Models.Forms_65133295
 {
     public class EmailService_65133295
     {
+        public static bool IsEmailSendingEnabled()
+        {
+            bool enabled;
+            return bool.TryParse(ConfigurationManager.AppSettings["EnableEmailSending"], out enabled) && enabled;
+        }
+
+        private static bool IsPlaceholderEmailConfig(string host, string user, string pass)
+        {
+            return string.IsNullOrWhiteSpace(host)
+                || string.IsNullOrWhiteSpace(user)
+                || string.IsNullOrWhiteSpace(pass)
+                || user.Contains("your-email@gmail.com")
+                || pass.Contains("your-app-password");
+        }
+
         public static void SendVerificationEmail(string toEmail, string userName, string token)
         {
             try
@@ -18,6 +33,11 @@ namespace Project_65133295.Models.Forms_65133295
                 string user = ConfigurationManager.AppSettings["EmailUser"];
                 string pass = ConfigurationManager.AppSettings["EmailPassword"];
                 string senderName = ConfigurationManager.AppSettings["EmailSenderName"];
+
+                if (IsPlaceholderEmailConfig(host, user, pass))
+                {
+                    throw new Exception("Email service is not configured. Set EmailHost, EmailUser, and EmailPassword in Web.config with valid SMTP credentials.");
+                }
 
                 string verifyUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + "/Guest_65133295/VerifyEmail?token=" + token;
 
@@ -57,6 +77,7 @@ namespace Project_65133295.Models.Forms_65133295
                     {
                         smtp.Credentials = new NetworkCredential(user, pass);
                         smtp.EnableSsl = true;
+                        smtp.UseDefaultCredentials = false;
                         smtp.Send(mail);
                     }
                 }
@@ -76,6 +97,11 @@ namespace Project_65133295.Models.Forms_65133295
                 string user = ConfigurationManager.AppSettings["EmailUser"];
                 string pass = ConfigurationManager.AppSettings["EmailPassword"];
                 string senderName = ConfigurationManager.AppSettings["EmailSenderName"];
+
+                if (IsPlaceholderEmailConfig(host, user, pass))
+                {
+                    throw new Exception("Email service is not configured. Set EmailHost, EmailUser, and EmailPassword in Web.config with valid SMTP credentials.");
+                }
 
                 string resetUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority) + "/Guest_65133295/ResetPassword?token=" + token + "&email=" + HttpUtility.UrlEncode(toEmail);
 
@@ -115,6 +141,7 @@ namespace Project_65133295.Models.Forms_65133295
                     {
                         smtp.Credentials = new NetworkCredential(user, pass);
                         smtp.EnableSsl = true;
+                        smtp.UseDefaultCredentials = false;
                         smtp.Send(mail);
                     }
                 }

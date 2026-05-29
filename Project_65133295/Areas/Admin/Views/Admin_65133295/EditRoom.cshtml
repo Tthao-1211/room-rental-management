@@ -139,12 +139,6 @@
                             @Html.ValidationMessageFor(m => m.StatusID, "", new { @class = "text-xs text-red-500 font-medium" })
                         </div>
 
-                        <div class="space-y-2 hidden">
-                            <label class="text-sm font-bold text-gray-700">Building Location</label>
-                            @Html.HiddenFor(m => m.AddressID)
-                            @Html.ValidationMessageFor(m => m.AddressID, "", new { @class = "text-xs text-red-500 font-medium" })
-                        </div>
-
                         <div class="space-y-2">
                             <label class="text-sm font-bold text-gray-700">Maximum Occupancy</label>
                             @Html.TextBoxFor(m => m.MaxOccupancy, new { @type = "number", @min = "0", @class = "block w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-1 focus:ring-primary focus:border-primary transition-all" })

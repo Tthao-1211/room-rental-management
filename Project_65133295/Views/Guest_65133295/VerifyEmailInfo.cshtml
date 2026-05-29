@@ -16,6 +16,13 @@
             <span class="font-bold text-gray-800">@ViewBag.Email</span>
         </p>
 
+        @if (TempData["WarningMessage"] != null)
+        {
+            <div class="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3 text-left text-sm text-yellow-800">
+                @TempData["WarningMessage"]
+            </div>
+        }
+
         <div class="bg-white py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-yellow-100">
             <p class="text-gray-600 text-sm mb-6">
                 Please click the link in the email to activate your account. 

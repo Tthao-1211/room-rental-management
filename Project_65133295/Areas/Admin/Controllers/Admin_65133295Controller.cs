@@ -673,18 +673,57 @@ namespace Project_65133295.Areas.Admin.Controllers
                 var room = db.Rooms.Find(id);
                 if (room == null) return Json(new { success = false, message = "Không tìm thấy phòng" });
 
-                // Check for active bookings
+                // Keep the existing protection for active bookings, but allow deleting
+                // historical data by removing all dependent records in the correct order.
                 if (db.Bookings.Any(b => b.RoomID == id && (b.BookingStatus == "Pending" || b.BookingStatus == "Confirmed")))
                 {
                     return Json(new { success = false, message = "Room has active bookings, cannot delete." });
                 }
 
-                // Delete related data
-                db.RoomUtilities.RemoveRange(db.RoomUtilities.Where(ru => ru.RoomID == id));
-                db.RoomImages.RemoveRange(db.RoomImages.Where(ri => ri.RoomID == id));
+                using (var transaction = db.Database.BeginTransaction())
+                {
+                    // Delete deepest dependents first to satisfy FK constraints.
+                    var roomBookingIds = db.Bookings
+                        .Where(b => b.RoomID == id)
+                        .Select(b => b.BookingID)
+                        .ToList();
 
-                db.Rooms.Remove(room);
-                db.SaveChanges();
+                    var contractIds = db.Contracts
+                        .Where(c => roomBookingIds.Contains(c.BookingID))
+                        .Select(c => c.ContractID)
+                        .ToList();
+
+                    var paymentIds = db.Payments
+                        .Where(p => contractIds.Contains(p.ContractID))
+                        .Select(p => p.PaymentID)
+                        .ToList();
+
+                    var feeIds = db.Fees
+                        .Where(f => paymentIds.Contains(f.PaymentID))
+                        .Select(f => f.FeeID)
+                        .ToList();
+
+                    if (feeIds.Any())
+                        db.Fees.RemoveRange(db.Fees.Where(f => feeIds.Contains(f.FeeID)));
+
+                    if (paymentIds.Any())
+                        db.Payments.RemoveRange(db.Payments.Where(p => paymentIds.Contains(p.PaymentID)));
+
+                    if (contractIds.Any())
+                        db.Contracts.RemoveRange(db.Contracts.Where(c => contractIds.Contains(c.ContractID)));
+
+                    if (roomBookingIds.Any())
+                        db.Bookings.RemoveRange(db.Bookings.Where(b => roomBookingIds.Contains(b.BookingID)));
+
+                    db.Reviews.RemoveRange(db.Reviews.Where(r => r.RoomID == id));
+                    db.RoomUtilities.RemoveRange(db.RoomUtilities.Where(ru => ru.RoomID == id));
+                    db.RoomImages.RemoveRange(db.RoomImages.Where(ri => ri.RoomID == id));
+
+                    db.Rooms.Remove(room);
+                    db.SaveChanges();
+
+                    transaction.Commit();
+                }
 
                 LogActivity("Delete", "Rooms", id, room.RoomNumber, null, $"Xóa phòng {room.RoomNumber} khỏi hệ thống");
 
@@ -851,6 +890,7 @@ namespace Project_65133295.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ApproveBooking(int id)
         {
+            bool isAjax = Request.IsAjaxRequest();
             using (var transaction = db.Database.BeginTransaction())
             {
                 try
@@ -858,7 +898,9 @@ namespace Project_65133295.Areas.Admin.Controllers
                     // Check Session first
                     if (Session["UserID"] == null || !int.TryParse(Session["UserID"].ToString(), out int adminId))
                     {
-                        TempData["ErrorMessage"] = "Session expired. Please log in again.";
+                        var msg = "Session expired. Please log in again.";
+                        if (isAjax) return Json(new { success = false, message = msg });
+                        TempData["ErrorMessage"] = msg;
                         return RedirectToAction("ManageBookings", "Admin_65133295", new { area = "Admin" });
                     }
 
@@ -868,19 +910,25 @@ namespace Project_65133295.Areas.Admin.Controllers
                         .FirstOrDefault(b => b.BookingID == id);
                     if (booking == null)
                     {
-                        TempData["ErrorMessage"] = "Booking not found.";
+                        var msg = "Booking not found.";
+                        if (isAjax) return Json(new { success = false, message = msg });
+                        TempData["ErrorMessage"] = msg;
                         return RedirectToAction("ManageBookings", "Admin_65133295", new { area = "Admin" });
                     }
 
                     if (booking.BookingStatus != "Pending")
                     {
-                        TempData["ErrorMessage"] = "This request is not in pending status.";
+                        var msg = "This request is not in pending status.";
+                        if (isAjax) return Json(new { success = false, message = msg });
+                        TempData["ErrorMessage"] = msg;
                         return RedirectToAction("ManageBookings", "Admin_65133295", new { area = "Admin" });
                     }
 
                     if (booking.Rooms == null)
                     {
-                        TempData["ErrorMessage"] = "Booking has no associated room.";
+                        var msg = "Booking has no associated room.";
+                        if (isAjax) return Json(new { success = false, message = msg });
+                        TempData["ErrorMessage"] = msg;
                         return RedirectToAction("ManageBookings", "Admin_65133295", new { area = "Admin" });
                     }
 
@@ -911,7 +959,8 @@ namespace Project_65133295.Areas.Admin.Controllers
                         RentalPrice = booking.Rooms.Price,
                         DepositAmount = depositAmount,
                         Status = "Active",
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
                     };
                     db.Contracts.Add(contract);
                     db.SaveChanges(); // Save contract FIRST to get ContractID
@@ -940,7 +989,9 @@ namespace Project_65133295.Areas.Admin.Controllers
                     if (!db.Users.Any(u => u.UserID == tenantUserId))
                     {
                         transaction.Rollback();
-                        TempData["ErrorMessage"] = "Tenant user not found.";
+                        var msg = "Tenant user not found.";
+                        if (isAjax) return Json(new { success = false, message = msg });
+                        TempData["ErrorMessage"] = msg;
                         return RedirectToAction("ManageBookings", "Admin_65133295", new { area = "Admin" });
                     }
 
@@ -975,9 +1026,11 @@ namespace Project_65133295.Areas.Admin.Controllers
                             inner = inner.InnerException;
                         }
                         transaction.Rollback();
-                        TempData["ErrorMessage"] = "DB error creating payment: " + innerMsg;
+                        var msg = "DB error creating payment: " + innerMsg;
                         // Log brief failure
                         LogActivity("Error", "Payments", null, null, null, $"Failed creating payment for booking {booking.BookingID}: {innerMsg}");
+                        if (isAjax) return Json(new { success = false, message = msg });
+                        TempData["ErrorMessage"] = msg;
                         return RedirectToAction("ManageBookings", "Admin_65133295", new { area = "Admin" });
                     }
 
@@ -1011,13 +1064,17 @@ namespace Project_65133295.Areas.Admin.Controllers
                             inner = inner.InnerException;
                         }
                         transaction.Rollback();
-                        TempData["ErrorMessage"] = "DB error saving notification/log: " + innerMsg;
+                        var msg = "DB error saving notification/log: " + innerMsg;
                         LogActivity("Error", "Notifications", null, null, null, $"Failed creating notification for booking {booking.BookingID}: {innerMsg}");
+                        if (isAjax) return Json(new { success = false, message = msg });
+                        TempData["ErrorMessage"] = msg;
                         return RedirectToAction("ManageBookings", "Admin_65133295", new { area = "Admin" });
                     }
 
                     transaction.Commit();
-                    TempData["SuccessMessage"] = $"Approved booking request from {(booking.Users1 != null ? booking.Users1.LastName : "Guest")} and created contract {contract.ContractNumber} successfully!";
+                    var successMsg = $"Approved booking request from {(booking.Users1 != null ? booking.Users1.LastName : "Guest")} and created contract {contract.ContractNumber} successfully!";
+                    if (isAjax) return Json(new { success = true, message = successMsg });
+                    TempData["SuccessMessage"] = successMsg;
                     return RedirectToAction("ManageBookings", "Admin_65133295", new { area = "Admin" });
                 }
                 catch (Exception ex)
@@ -1033,7 +1090,9 @@ namespace Project_65133295.Areas.Admin.Controllers
                     }
                     // Log and surface a concise message to admin
                     LogActivity("Error", "Bookings", id, null, null, $"ApproveBooking failed for booking {id}: {fullError}");
-                    TempData["ErrorMessage"] = "Error approving booking: " + fullError;
+                    var errMsg = "Error approving booking: " + fullError;
+                    if (isAjax) return Json(new { success = false, message = errMsg });
+                    TempData["ErrorMessage"] = errMsg;
                     return RedirectToAction("ManageBookings", "Admin_65133295", new { area = "Admin" });
                 }
             }
@@ -1135,6 +1194,101 @@ namespace Project_65133295.Areas.Admin.Controllers
             ViewBag.CurrentStatus = status;
 
             return View(model);
+        }
+
+        // GET: Admin/Admin_65133295/DetailsBooking/5
+        public ActionResult DetailsBooking(int id)
+        {
+            var booking = db.Bookings
+                .Include(b => b.Rooms)
+                .Include(b => b.Users1)
+                .FirstOrDefault(b => b.BookingID == id);
+
+            if (booking == null)
+            {
+                TempData["ErrorMessage"] = "Booking not found.";
+                return RedirectToAction("ManageBookings");
+            }
+
+            ViewBag.PageTitle = "Booking Details";
+            ViewBag.PageDescription = "Review booking request #" + booking.BookingID;
+
+            return View(booking);
+        }
+
+        // POST: Admin/Admin_65133295/RejectBooking/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RejectBooking(int id)
+        {
+            bool isAjax = Request.IsAjaxRequest();
+            try
+            {
+                if (Session["UserID"] == null)
+                {
+                    var msg = "Session expired. Please log in again.";
+                    if (isAjax) return Json(new { success = false, message = msg });
+                    TempData["ErrorMessage"] = msg;
+                    return RedirectToAction("ManageBookings");
+                }
+
+                var booking = db.Bookings.Include("Users1").Include("Rooms").FirstOrDefault(b => b.BookingID == id);
+                if (booking == null)
+                {
+                    var msg = "Booking not found.";
+                    if (isAjax) return Json(new { success = false, message = msg });
+                    TempData["ErrorMessage"] = msg;
+                    return RedirectToAction("ManageBookings");
+                }
+
+                if (booking.BookingStatus != "Pending")
+                {
+                    var msg = "Only pending bookings can be rejected.";
+                    if (isAjax) return Json(new { success = false, message = msg });
+                    TempData["ErrorMessage"] = msg;
+                    return RedirectToAction("ManageBookings");
+                }
+
+                // Read optional reason
+                string reason = Request.Form["reason"] ?? Request.Params["reason"] ?? string.Empty;
+
+                booking.BookingStatus = "Rejected";
+                booking.UpdatedAt = DateTime.Now;
+                db.SaveChanges();
+
+                // Log activity (include reason if provided)
+                LogActivity("Reject", "Bookings", booking.BookingID, null, "Rejected", $"Rejected booking {booking.BookingID}. Reason: {reason}");
+
+                // Notify user
+                if (booking.UserID != 0)
+                {
+                    db.Notifications.Add(new Notifications
+                    {
+                        RecipientID = booking.UserID,
+                        SenderID = GetCurrentAdminID(),
+                        Title = "Booking Rejected",
+                        Message = $"Yêu cầu đặt phòng #{booking.BookingID} đã bị từ chối. {(!string.IsNullOrEmpty(reason) ? ("Lý do: " + reason) : "")} ",
+                        Type = "Booking",
+                        RelatedEntityType = "Bookings",
+                        RelatedEntityID = booking.BookingID,
+                        IsRead = false,
+                        CreatedAt = DateTime.Now
+                    });
+                    db.SaveChanges();
+                }
+
+                var successMsg = "Booking rejected successfully.";
+                if (isAjax) return Json(new { success = true, message = successMsg });
+                TempData["SuccessMessage"] = successMsg;
+                return RedirectToAction("ManageBookings");
+            }
+            catch (Exception ex)
+            {
+                var msg = "Error rejecting booking: " + ex.Message;
+                if (isAjax) return Json(new { success = false, message = msg });
+                TempData["ErrorMessage"] = msg;
+                return RedirectToAction("ManageBookings");
+            }
         }
 
         // GET: Admin/Admin_65133295/ManageContracts
@@ -1292,6 +1446,163 @@ namespace Project_65133295.Areas.Admin.Controllers
         {
             var users = db.Users.OrderBy(u => u.UserID).ToList();
             return View(users);
+        }
+
+        // POST: Admin/Admin_65133295/ToggleUserLock
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult ToggleUserLock(int userId, string reason)
+        {
+            try
+            {
+                var user = db.Users.Find(userId);
+                if (user == null) return Json(new { success = false, message = "Người dùng không tồn tại." });
+
+                // Toggle active state
+                bool newState = !(user.IsActive ?? true);
+                user.IsActive = newState;
+                db.SaveChanges();
+
+                // Log activity
+                var action = newState ? "Unlock" : "Lock";
+                LogActivity(action, "Users", user.UserID, null, newState.ToString(), $"{action} user {user.Email}. Reason: {reason}");
+
+                // Optionally notify user
+                try
+                {
+                    db.Notifications.Add(new Notifications
+                    {
+                        RecipientID = user.UserID,
+                        SenderID = GetCurrentAdminID(),
+                        Title = newState ? "Tài khoản đã được mở khóa" : "Tài khoản bị khóa",
+                        Message = reason ?? (newState ? "Tài khoản của bạn đã được mở khóa." : "Tài khoản của bạn đã bị khóa."),
+                        Type = "Account",
+                        RelatedEntityType = "Users",
+                        RelatedEntityID = user.UserID,
+                        IsRead = false,
+                        CreatedAt = DateTime.Now
+                    });
+                    db.SaveChanges();
+                }
+                catch { /* swallow notification errors */ }
+
+                return Json(new { success = true, message = newState ? "Tài khoản đã được mở khóa." : "Tài khoản đã bị khóa." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi khi thay đổi trạng thái tài khoản: " + ex.Message });
+            }
+        }
+
+        // POST: Admin/Admin_65133295/DeleteUser
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult DeleteUser(int id)
+        {
+            try
+            {
+                var user = db.Users.Find(id);
+                if (user == null) return Json(new { success = false, message = "Người dùng không tồn tại." });
+
+                // Prevent deleting admin/staff via this endpoint
+                if (user.Role != Project_65133295.Models.UserRole.Khach)
+                {
+                    return Json(new { success = false, message = "Không thể xóa tài khoản có quyền cao hơn." });
+                }
+
+                // Check for related records that prevent deletion
+                var related = new List<string>();
+                if (db.Bookings.Any(b => b.UserID == id)) related.Add("bookings (đặt phòng)");
+                if (db.Payments.Any(p => p.UserID == id)) related.Add("payments (hóa đơn)");
+                if (db.Notifications.Any(n => n.RecipientID == id || n.SenderID == id)) related.Add("notifications");
+                if (db.ActivityLogs.Any(a => a.UserID == id)) related.Add("activity logs");
+                if (db.Rooms.Any(r => r.CurrentTenantID == id)) related.Add("rooms (current tenant)");
+
+                if (related.Any())
+                {
+                    // If there are related records, reassign them to a placeholder 'deleted' user
+                    using (var transaction = db.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            int placeholderId = EnsureDeletedPlaceholderUser();
+
+                            // Reassign bookings
+                            var bookings = db.Bookings.Where(b => b.UserID == id).ToList();
+                            foreach (var b in bookings) b.UserID = placeholderId;
+
+                            // Reassign payments (tenant)
+                            var payments = db.Payments.Where(p => p.UserID == id).ToList();
+                            foreach (var p in payments) p.UserID = placeholderId;
+
+                            // Reassign notifications
+                            var notiRec = db.Notifications.Where(n => n.RecipientID == id).ToList();
+                            foreach (var n in notiRec) n.RecipientID = placeholderId;
+                            var notiSend = db.Notifications.Where(n => n.SenderID == id).ToList();
+                            foreach (var n in notiSend) n.SenderID = placeholderId;
+
+                            // Reassign activity logs
+                            var logs = db.ActivityLogs.Where(a => a.UserID == id).ToList();
+                            foreach (var l in logs) l.UserID = placeholderId;
+
+                            // Reassign rooms current tenant
+                            var rooms = db.Rooms.Where(r => r.CurrentTenantID == id).ToList();
+                            foreach (var r in rooms) r.CurrentTenantID = placeholderId;
+
+                            db.SaveChanges();
+
+                            // Now safe to remove user
+                            db.Users.Remove(user);
+                            db.SaveChanges();
+
+                            LogActivity("Delete", "Users", user.UserID, null, null, $"Deleted user {user.Email} (reassigned related records to {placeholderId})");
+
+                            transaction.Commit();
+                            return Json(new { success = true, message = "Người dùng đã được xóa và dữ liệu liên quan đã được chuyển sang tài khoản placeholder." });
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            return Json(new { success = false, message = "Lỗi khi chuyển/xóa dữ liệu liên quan: " + ex.Message });
+                        }
+                    }
+                }
+
+                // No related records, safe to delete
+                db.Users.Remove(user);
+                db.SaveChanges();
+
+                LogActivity("Delete", "Users", user.UserID, null, null, $"Deleted user {user.Email}");
+
+                return Json(new { success = true, message = "Người dùng đã được xóa." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi khi xóa người dùng: " + ex.Message });
+            }
+        }
+
+        private int EnsureDeletedPlaceholderUser()
+        {
+            string placeholderEmail = "deleted@system.local";
+            var existing = db.Users.FirstOrDefault(u => u.Email == placeholderEmail);
+            if (existing != null) return existing.UserID;
+
+            var user = new Project_65133295.Models.User
+            {
+                Username = "deleted_user",
+                Email = placeholderEmail,
+                PasswordHash = Guid.NewGuid().ToString("N"),
+                FirstName = "Deleted",
+                LastName = "User",
+                Role = Project_65133295.Models.UserRole.Khach,
+                IsActive = false,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            db.Users.Add(user);
+            db.SaveChanges();
+            return user.UserID;
         }
 
         // POST: Admin/Admin_65133295/CheckoutContract

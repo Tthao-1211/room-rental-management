@@ -223,9 +223,11 @@ namespace Project_65133295.Controllers
                     {
                         try
                         {
+                            string username = BuildUniqueUsername(model.Email);
+
                             var newUser = new User
                             {
-                                Username = model.Email.Split('@')[0],
+                                Username = username,
                                 LastName = model.LastName,
                                 FirstName = model.FirstName,
                                 Email = model.Email,
@@ -234,10 +236,25 @@ namespace Project_65133295.Controllers
                                 Role = Project_65133295.Models.UserRole.Khach, // Tenant
                                 IsActive = true,
                                 IsEmailVerified = false,
-                                CreatedAt = DateTime.Now
+                                CreatedAt = DateTime.Now,
+                                UpdatedAt = DateTime.Now
                             };
                             db.Users.Add(newUser);
-                            db.SaveChanges();
+                            try
+                            {
+                                db.SaveChanges();
+                            }
+                            catch (System.Data.Entity.Infrastructure.DbUpdateException dbEx)
+                            {
+                                var inner = dbEx.InnerException;
+                                string innerMsg = dbEx.Message;
+                                while (inner != null)
+                                {
+                                    innerMsg += " -> " + inner.Message;
+                                    inner = inner.InnerException;
+                                }
+                                throw new Exception("DB error creating user: " + innerMsg, dbEx);
+                            }
 
                             // Create verification token
                             string token = Guid.NewGuid().ToString();
@@ -250,18 +267,58 @@ namespace Project_65133295.Controllers
                                 CreatedAt = DateTime.Now
                             };
                             db.EmailVerificationTokens.Add(verificationToken);
-                            db.SaveChanges();
-
-                            // Send email
-                            EmailService_65133295.SendVerificationEmail(newUser.Email, newUser.FirstName, token);
+                            try
+                            {
+                                db.SaveChanges();
+                            }
+                            catch (System.Data.Entity.Infrastructure.DbUpdateException dbEx)
+                            {
+                                var inner = dbEx.InnerException;
+                                string innerMsg = dbEx.Message;
+                                while (inner != null)
+                                {
+                                    innerMsg += " -> " + inner.Message;
+                                    inner = inner.InnerException;
+                                }
+                                throw new Exception("DB error creating verification token: " + innerMsg, dbEx);
+                            }
 
                             transaction.Commit();
+
+                            if (EmailService_65133295.IsEmailSendingEnabled())
+                            {
+                                // Send email after DB commit so SMTP failures do not roll back registration.
+                                try
+                                {
+                                    EmailService_65133295.SendVerificationEmail(newUser.Email, newUser.FirstName, token);
+                                }
+                                catch (Exception mailEx)
+                                {
+                                    string mailError = mailEx.Message;
+                                    Exception mailInner = mailEx.InnerException;
+                                    while (mailInner != null)
+                                    {
+                                        mailError += " -> " + mailInner.Message;
+                                        mailInner = mailInner.InnerException;
+                                    }
+
+                                    TempData["WarningMessage"] = "Account created, but verification email could not be sent: " + mailError;
+                                }
+                            }
+
                             return RedirectToAction("VerifyEmailInfo", new { email = newUser.Email });
                         }
                         catch (Exception ex)
                         {
                             transaction.Rollback();
-                            ModelState.AddModelError("", "An error occurred during registration: " + ex.Message);
+                            string fullError = ex.Message;
+                            Exception inner = ex.InnerException;
+                            while (inner != null)
+                            {
+                                fullError += " -> " + inner.Message;
+                                inner = inner.InnerException;
+                            }
+                            ModelState.AddModelError("", "An error occurred during registration: " + fullError);
                         }
                     }
                 }
@@ -271,6 +328,34 @@ namespace Project_65133295.Controllers
                 }
             }
             return View(model);
+        }
+
+        private string BuildUniqueUsername(string email)
+        {
+            string baseName = (email ?? "").Split('@').FirstOrDefault() ?? "";
+            baseName = new string(baseName.Where(c => char.IsLetterOrDigit(c) || c == '_' || c == '.').ToArray()).Trim('.', '_');
+            if (string.IsNullOrWhiteSpace(baseName))
+            {
+                baseName = "user";
+            }
+
+            const int maxLength = 50;
+            string candidate = baseName.Length > maxLength ? baseName.Substring(0, maxLength) : baseName;
+            int suffix = 1;
+
+            while (db.Users.Any(u => u.Username == candidate))
+            {
+                string suffixText = "_" + suffix++;
+                int allowedBaseLength = maxLength - suffixText.Length;
+                if (allowedBaseLength < 1)
+                {
+                    allowedBaseLength = 1;
+                }
+                string trimmedBase = baseName.Length > allowedBaseLength ? baseName.Substring(0, allowedBaseLength) : baseName;
+                candidate = trimmedBase + suffixText;
+            }
+
+            return candidate;
         }
 
         // Notification after successful registration, waiting for email verification
@@ -338,7 +423,26 @@ namespace Project_65133295.Controllers
                     db.PasswordResetTokens.Add(resetToken);
                     db.SaveChanges();
 
-                    EmailService_65133295.SendPasswordResetEmail(user.Email, user.FirstName, token);
+                    try
+                    {
+                        if (EmailService_65133295.IsEmailSendingEnabled())
+                        {
+                            EmailService_65133295.SendPasswordResetEmail(user.Email, user.FirstName, token);
+                        }
+                        TempData["SuccessMessage"] = "If the email exists in our system, a password reset link has been sent.";
+                    }
+                    catch (Exception mailEx)
+                    {
+                        string mailError = mailEx.Message;
+                        Exception mailInner = mailEx.InnerException;
+                        while (mailInner != null)
+                        {
+                            mailError += " -> " + mailInner.Message;
+                            mailInner = mailInner.InnerException;
+                        }
+
+                        TempData["WarningMessage"] = "Reset token was created, but email could not be sent: " + mailError;
+                    }
                 }
 
                 return View("ForgotPasswordInfo", (object)model.Email);

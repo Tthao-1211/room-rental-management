@@ -1,4 +1,4 @@
-﻿    @model IEnumerable<Project_65133295.Models.Bookings>
+﻿    @model IEnumerable<Project_65133295.Areas.Admin.Data.BookingListItem_65133295>
 
 @{
     ViewBag.Title = "Manage Bookings";
@@ -58,17 +58,17 @@
                         <td class="px-6 py-4">
                             <div class="flex items-center">
                                 <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-3">
-                                    @((item.Users1?.FirstName ?? "U").Substring(0, 1))
+                                    @((!string.IsNullOrEmpty(item.TenantFullName) ? item.TenantFullName : "U").Substring(0, 1))
                                 </div>
                                 <div>
-                                    <div class="text-sm font-bold text-gray-900">@item.Users1?.FirstName @item.Users1?.LastName</div>
-                                    <div class="text-xs text-gray-500">@item.Users1?.PhoneNumber</div>
+                                    <div class="text-sm font-bold text-gray-900">@item.TenantFullName</div>
+                                    <div class="text-xs text-gray-500">@item.TenantPhone</div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-700">
-                            <span class="font-bold text-blue-600">P.@item.Rooms?.RoomNumber</span><br />
-                            <span class="text-xs text-gray-500">@item.Rooms?.Title</span>
+                            <span class="font-bold text-blue-600">P.@item.RoomNumber</span><br />
+                            <span class="text-xs text-gray-500">@item.RoomTitle</span>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-700 text-center">
                             @(item.CheckInDate.ToString("dd/MM/yyyy"))
@@ -109,10 +109,10 @@
                                 @if (item.BookingStatus == "Pending")
                                 {
                                     @* Approve form *@
-                                    using (Html.BeginForm("ApproveBooking", "Admin_65133295", new { area = "Admin", id = item.BookingID }, FormMethod.Post, new { @class = "inline-block" }))
+                                    using (Html.BeginForm("ApproveBooking", "Admin_65133295", new { area = "Admin", id = item.BookingID }, FormMethod.Post, new { @class = "inline-block approve-form" }))
                                     {
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" onclick="return confirm('Confirm approve?');" class="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all" title="Approve">
+                                        <button type="button" onclick="confirmApprove(this)" class="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-all" title="Approve">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
@@ -120,10 +120,10 @@
                                     }
 
                                     @* Reject form *@
-                                    using (Html.BeginForm("RejectBooking", "Admin_65133295", new { area = "Admin", id = item.BookingID }, FormMethod.Post, new { @class = "inline-block" }))
+                                    using (Html.BeginForm("RejectBooking", "Admin_65133295", new { area = "Admin", id = item.BookingID }, FormMethod.Post, new { @class = "inline-block reject-form" }))
                                     {
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" onclick="return confirm('Confirm reject?');" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Reject">
+                                        <button type="button" onclick="confirmReject(this)" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Reject">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                             </svg>
@@ -138,3 +138,79 @@
         </table>
     </div>
 </div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function goToPage(page) {
+            document.getElementById('pageInput').value = page;
+            document.getElementById('paginationForm').submit();
+        }
+
+        function ajaxPostForm(form, onSuccess) {
+            var $form = $(form);
+            var url = $form.attr('action');
+            var data = {};
+            $form.serializeArray().forEach(function (x) { data[x.name] = x.value; });
+
+            $.post(url, data)
+                .done(function (resp) {
+                    try {
+                        if (resp && resp.success) {
+                            Swal.fire({ icon: 'success', title: resp.message || 'Success' }).then(function () { if (onSuccess) onSuccess(); else location.reload(); });
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Error', text: (resp && resp.message) || 'Operation failed' });
+                        }
+                    } catch (e) {
+                        Swal.fire({ icon: 'success', title: 'Success' }).then(function () { location.reload(); });
+                    }
+                })
+                .fail(function (xhr) {
+                    var text = xhr && xhr.responseText ? xhr.responseText : 'Server error';
+                    Swal.fire({ icon: 'error', title: 'Error', text: text });
+                });
+        }
+
+        function confirmApprove(btn) {
+            const form = $(btn).closest('form');
+            Swal.fire({
+                title: 'Confirm approve?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#16a34a',
+                confirmButtonText: 'Approve',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    ajaxPostForm(form, function () {
+                        // remove the row or reload
+                        $(form).closest('tr').fadeOut(200, function () { $(this).remove(); });
+                    });
+                }
+            });
+        }
+
+        function confirmReject(btn) {
+            const form = $(btn).closest('form');
+            Swal.fire({
+                title: 'Reject booking?',
+                input: 'textarea',
+                inputPlaceholder: 'Enter rejection reason (optional)',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Reject',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (result.value) {
+                        var input = $('<input>').attr('type', 'hidden').attr('name', 'reason').val(result.value);
+                        form.append(input);
+                    }
+                    ajaxPostForm(form, function () {
+                        $(form).closest('tr').fadeOut(200, function () { $(this).remove(); });
+                    });
+                }
+            });
+        }
+    </script>
+}

@@ -351,13 +351,16 @@ namespace Project_65133295.Areas.User.Controllers
                 Duration = Duration,
                 DepositAmount = finalDepositAmount,
                 Notes = Notes,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
             };
 
             db.Bookings.Add(booking);
             
             // Update Room Status to Reserved (4) immediately to prevent others from booking
             room.StatusID = 4; 
+
+            db.SaveChanges();
             
             // Notify Admins of new booking request
             var adminsForBooking = db.Users.Where(u => u.Role == Project_65133295.Models.UserRole.Admin).ToList();

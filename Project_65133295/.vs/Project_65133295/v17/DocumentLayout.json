@@ -3,19 +3,27 @@
   "WorkspaceRootPath": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|c:\\users\\asus\\desktop\\room-rental-management\\project_65133295\\areas\\admin\\views\\admin_65133295\\manageusers.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|c:\\users\\asus\\desktop\\room-rental-management\\project_65133295\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|solutionrelative:web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\views\\guest_65133295\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|solutionrelative:views\\guest_65133295\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\areas\\admin\\views\\admin_65133295\\manageusers.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|solutionrelative:areas\\admin\\views\\admin_65133295\\manageusers.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|c:\\users\\asus\\desktop\\room-rental-management\\project_65133295\\areas\\admin\\controllers\\admin_65133295controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\areas\\admin\\controllers\\admin_65133295controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|solutionrelative:areas\\admin\\controllers\\admin_65133295controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|c:\\users\\asus\\desktop\\room-rental-management\\project_65133295\\areas\\admin\\data\\bookinglistitem_65133295.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\areas\\admin\\data\\bookinglistitem_65133295.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|solutionrelative:areas\\admin\\data\\bookinglistitem_65133295.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|c:\\users\\asus\\desktop\\room-rental-management\\project_65133295\\areas\\admin\\views\\admin_65133295\\managebookings.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "AbsoluteMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\areas\\admin\\views\\admin_65133295\\managebookings.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{B6C4CD55-1361-4516-9245-E5AF20161E7D}|Project_65133295.csproj|solutionrelative:areas\\admin\\views\\admin_65133295\\managebookings.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
@@ -26,24 +34,48 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ManageUsers.cshtml",
-              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Areas\\Admin\\Views\\Admin_65133295\\ManageUsers.cshtml",
-              "RelativeDocumentMoniker": "Areas\\Admin\\Views\\Admin_65133295\\ManageUsers.cshtml",
-              "ToolTip": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Areas\\Admin\\Views\\Admin_65133295\\ManageUsers.cshtml",
-              "RelativeToolTip": "Areas\\Admin\\Views\\Admin_65133295\\ManageUsers.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAF8BAAAPAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "Register.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Views\\Guest_65133295\\Register.cshtml",
+              "RelativeDocumentMoniker": "Views\\Guest_65133295\\Register.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Views\\Guest_65133295\\Register.cshtml",
+              "RelativeToolTip": "Views\\Guest_65133295\\Register.cshtml",
+              "ViewState": "AgIAADkAAAAAAAAAAAAYwEkAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-26T06:11:41.043Z",
+              "WhenOpened": "2026-05-26T09:57:03.113Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Web.config",
+              "RelativeDocumentMoniker": "Web.config",
+              "ToolTip": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Web.config",
+              "RelativeToolTip": "Web.config",
+              "ViewState": "AgIAABMAAAAAAAAAAAAQwC4AAABdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2026-05-26T09:06:38.311Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "ManageUsers.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Areas\\Admin\\Views\\Admin_65133295\\ManageUsers.cshtml",
+              "RelativeDocumentMoniker": "Areas\\Admin\\Views\\Admin_65133295\\ManageUsers.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Areas\\Admin\\Views\\Admin_65133295\\ManageUsers.cshtml",
+              "RelativeToolTip": "Areas\\Admin\\Views\\Admin_65133295\\ManageUsers.cshtml",
+              "ViewState": "AgIAAI0AAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-26T06:11:41.043Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "BookingListItem_65133295.cs",
               "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Areas\\Admin\\Data\\BookingListItem_65133295.cs",
               "RelativeDocumentMoniker": "Areas\\Admin\\Data\\BookingListItem_65133295.cs",
@@ -51,12 +83,11 @@
               "RelativeToolTip": "Areas\\Admin\\Data\\BookingListItem_65133295.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-26T05:58:07.797Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-26T05:58:07.797Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Admin_65133295Controller.cs",
               "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Areas\\Admin\\Controllers\\Admin_65133295Controller.cs",
               "RelativeDocumentMoniker": "Areas\\Admin\\Controllers\\Admin_65133295Controller.cs",
@@ -64,12 +95,11 @@
               "RelativeToolTip": "Areas\\Admin\\Controllers\\Admin_65133295Controller.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAABIAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-26T05:54:47.038Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-26T05:54:47.038Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "ManageBookings.cshtml",
               "DocumentMoniker": "C:\\Users\\ASUS\\Desktop\\room-rental-management\\Project_65133295\\Areas\\Admin\\Views\\Admin_65133295\\ManageBookings.cshtml",
               "RelativeDocumentMoniker": "Areas\\Admin\\Views\\Admin_65133295\\ManageBookings.cshtml",
@@ -77,8 +107,7 @@
               "RelativeToolTip": "Areas\\Admin\\Views\\Admin_65133295\\ManageBookings.cshtml",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-05-26T05:55:25.244Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-26T05:55:25.244Z"
             }
           ]
         }

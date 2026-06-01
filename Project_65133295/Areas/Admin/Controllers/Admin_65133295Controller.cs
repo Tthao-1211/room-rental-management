@@ -120,6 +120,9 @@ namespace Project_65133295.Areas.Admin.Controllers
                 case "ManageUsers":
                     return group.CanViewTenantProfile;
 
+                case "UserDetails":
+                    return group.CanViewTenantProfile;
+
                 case "ApproveReviews":
                 case "UpdateReviewStatus":
                     return group.CanManageReview;
@@ -1599,6 +1602,24 @@ namespace Project_65133295.Areas.Admin.Controllers
             ViewBag.CurrentRole = normalizedRole;
 
             return View(users);
+        }
+
+        public ActionResult UserDetails(int id)
+        {
+            var user = db.Users
+                .Include("EmployeeProfiles.EmployeeGroup")
+                .Include(u => u.ActivityLogs)
+                .Include(u => u.Bookings1)
+                .Include(u => u.Payments1)
+                .Include(u => u.Reviews)
+                .FirstOrDefault(u => u.UserID == id);
+
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(user);
         }
 
         // POST: Admin/Admin_65133295/ToggleUserLock

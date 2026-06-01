@@ -206,6 +206,7 @@
     <Content Include="Areas\Admin\Views\Admin_65133295\ManageContracts.cshtml" />
     <Content Include="Areas\Admin\Views\Admin_65133295\CreateMonthlyInvoices.cshtml" />
     <Content Include="Areas\Admin\Views\Admin_65133295\ManageUsers.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin_65133295\UserDetails.cshtml" />
     <Content Include="Areas\Admin\Views\Admin_65133295\CreateUser.cshtml" />
     <Content Include="Areas\Admin\Views\Admin_65133295\EmployeeGroups.cshtml" />
     <Content Include="Areas\Admin\Views\Admin_65133295\CreateEmployeeGroup.cshtml" />

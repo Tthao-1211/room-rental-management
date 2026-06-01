@@ -13,14 +13,15 @@ namespace Project_65133295.Models
 
         public int RoomID { get; set; }
 
+        [Required]
         [StringLength(500)]
         public string ImageUrl { get; set; }
 
-        public int? DisplayOrder { get; set; }
+        public int DisplayOrder { get; set; } = 1;
 
-        public bool? IsMainImage { get; set; }
+        public bool IsMainImage { get; set; } = false;
 
-        public DateTime? UploadedAt { get; set; }
+        public DateTime UploadedAt { get; set; } = DateTime.Now;
 
         public virtual Room Rooms { get; set; }
     }

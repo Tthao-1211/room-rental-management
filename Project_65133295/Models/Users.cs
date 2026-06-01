@@ -1,10 +1,11 @@
 namespace Project_65133295.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Spatial;
+using System.Linq;
 
     [Table("Users")]
     public partial class User
@@ -16,6 +17,7 @@ namespace Project_65133295.Models
             Bookings = new HashSet<Bookings>();
             Bookings1 = new HashSet<Bookings>();
             EmailVerificationTokens = new HashSet<EmailVerificationTokens>();
+            EmployeeProfiles = new HashSet<EmployeeProfile>();
             Notifications = new HashSet<Notifications>();
             Notifications1 = new HashSet<Notifications>();
             PasswordResetTokens = new HashSet<PasswordResetTokens>();
@@ -31,10 +33,12 @@ namespace Project_65133295.Models
 
         [Required]
         [StringLength(50)]
+        [Index("IX_Users_Username", IsUnique = true)]
         public string Username { get; set; }
 
         [Required]
         [StringLength(100)]
+        [Index("IX_Users_Email", IsUnique = true)]
         public string Email { get; set; }
 
         [Required]
@@ -51,7 +55,7 @@ namespace Project_65133295.Models
         public string PhoneNumber { get; set; }
 
         [Range(0, 2, ErrorMessage = "Invalid role value")]
-        public UserRole Role { get; set; }
+        public UserRole Role { get; set; } = UserRole.Khach;
 
         [StringLength(500)]
         public string Avatar { get; set; }
@@ -78,15 +82,21 @@ namespace Project_65133295.Models
         [StringLength(100)]
         public string City { get; set; }
 
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
-        public bool? IsEmailVerified { get; set; }
+        public bool IsEmailVerified { get; set; } = false;
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         public DateTime? LastLoginAt { get; set; }
+
+        [NotMapped]
+        public virtual EmployeeProfile EmployeeProfile => EmployeeProfiles.FirstOrDefault();
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EmployeeProfile> EmployeeProfiles { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ActivityLogs> ActivityLogs { get; set; }

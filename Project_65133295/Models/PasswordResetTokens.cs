@@ -15,13 +15,14 @@ namespace Project_65133295.Models
 
         [Required]
         [StringLength(255)]
+        [Index("IX_PasswordResetTokens_Token", IsUnique = true)]
         public string Token { get; set; }
 
         public DateTime ExpiresAt { get; set; }
 
-        public bool? IsUsed { get; set; }
+        public bool IsUsed { get; set; } = false;
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public virtual User Users { get; set; }
     }

@@ -19,12 +19,14 @@ namespace Project_65133295.Models
 
         [Required]
         [StringLength(100)]
+        [Index("IX_Utilities_UtilityName", IsUnique = true)]
         public string UtilityName { get; set; }
 
         [StringLength(255)]
         public string Description { get; set; }
 
-
+        [StringLength(100)]
+        public string Icon { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RoomUtilities> RoomUtilities { get; set; }

@@ -22,7 +22,7 @@
     var depositAmount = Model.DepositAmount.HasValue ? Model.DepositAmount.Value.ToString("N0") + " đ" : "0 đ";
     var duration = Model.Duration.HasValue ? Model.Duration.Value + " tháng" : "N/A";
     var checkInDate = Model.CheckInDate.ToString("dd/MM/yyyy");
-    var createdAt = Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "-";
+    var createdAt = Model.CreatedAt.ToString("dd/MM/yyyy HH:mm");
 
     var statusClass = "bg-gray-100 text-gray-700 border border-gray-200";
     var statusLabel = Model.BookingStatus ?? "Không xác định";
@@ -118,7 +118,7 @@
                         </div>
                         <div>
                             <p class="text-xs text-gray-500">Cập nhật lúc</p>
-                            <p class="font-bold text-gray-900">@((Model.UpdatedAt.HasValue) ? Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "-")</p>
+                            <p class="font-bold text-gray-900">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</p>
                         </div>
                     </div>
                 </div>

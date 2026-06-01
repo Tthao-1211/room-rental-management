@@ -100,7 +100,7 @@
                                     @(item.Rooms != null ? item.Rooms.RoomNumber : "N/A")
                                 </td>
                                 <td class="px-6 py-4 text-gray-500">
-                                    @((item.CreatedAt != null) ? item.CreatedAt.ToString("dd/MM/yyyy") : "N/A")
+                                    @item.CreatedAt.ToString("dd/MM/yyyy")
                                 </td>
                                 <td class="px-6 py-4">
                                     @if (item.BookingStatus == "Pending")

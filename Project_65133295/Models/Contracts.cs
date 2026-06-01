@@ -17,10 +17,12 @@ namespace Project_65133295.Models
         [Key]
         public int ContractID { get; set; }
 
+        [Index("IX_Contracts_BookingID", IsUnique = true)]
         public int BookingID { get; set; }
 
         [Required]
         [StringLength(50)]
+        [Index("IX_Contracts_ContractNumber", IsUnique = true)]
         public string ContractNumber { get; set; }
 
         public DateTime StartDate { get; set; }
@@ -35,12 +37,13 @@ namespace Project_65133295.Models
 
         public DateTime? SignedDate { get; set; }
 
+        [Required]
         [StringLength(30)]
-        public string Status { get; set; }
+        public string Status { get; set; } = "Active";
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         public virtual Bookings Bookings { get; set; }
 

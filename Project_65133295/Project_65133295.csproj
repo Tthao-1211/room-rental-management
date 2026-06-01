@@ -146,9 +146,12 @@
     <Compile Include="Models\Bookings.cs" />
     <Compile Include="Models\Contracts.cs" />
     <Compile Include="Models\DbContext_65133295.cs" />
+    <Compile Include="Models\EmployeeGroup.cs" />
+    <Compile Include="Models\EmployeeProfile.cs" />
     <Compile Include="Models\EmailVerificationTokens.cs" />
     <Compile Include="Models\Fees.cs" />
     <Compile Include="Models\Forms_65133295\EmailService_65133295.cs" />
+    <Compile Include="Models\Forms_65133295\AdminCreateUserViewModel_65133295.cs" />
     <Compile Include="Models\Forms_65133295\ForgotPasswordViewModel_65133295.cs" />
     <Compile Include="Models\Forms_65133295\LoginViewModel_65133295.cs" />
     <Compile Include="Models\Forms_65133295\RegisterViewModel_65133295.cs" />
@@ -203,6 +206,14 @@
     <Content Include="Areas\Admin\Views\Admin_65133295\ManageContracts.cshtml" />
     <Content Include="Areas\Admin\Views\Admin_65133295\CreateMonthlyInvoices.cshtml" />
     <Content Include="Areas\Admin\Views\Admin_65133295\ManageUsers.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin_65133295\CreateUser.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin_65133295\EmployeeGroups.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin_65133295\CreateEmployeeGroup.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin_65133295\EditEmployeeGroup.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin_65133295\EmployeeGroupDetails.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin_65133295\EmployeeProfiles.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin_65133295\CreateEmployeeProfile.cshtml" />
+    <Content Include="Areas\Admin\Views\Admin_65133295\EditEmployeeProfile.cshtml" />
     <Content Include="Areas\Admin\Views\Admin_65133295\ApproveReviews.cshtml" />
     <Content Include="Areas\Admin\Views\Admin_65133295\ViewActivityLogs.cshtml" />
     <Content Include="Areas\User\Views\Shared\_LayoutUser.cshtml" />

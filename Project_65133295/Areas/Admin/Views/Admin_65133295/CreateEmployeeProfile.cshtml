@@ -1,0 +1,54 @@
+@model Project_65133295.Models.EmployeeProfile
+
+@{
+    ViewBag.Title = "Create Employee Profile";
+    ViewBag.PageTitle = "Create Employee Profile";
+    ViewBag.PageDescription = "Assign a user to a permission group";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+        @Html.ValidationSummary(true, "", new { @class = "text-red-600 text-sm" })
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
+                @Html.DropDownListFor(m => m.UserID, ViewBag.UserList as SelectList, "-- Select user --", new { @class = "w-full rounded-lg border-gray-300" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Group</label>
+                @Html.DropDownListFor(m => m.GroupID, ViewBag.GroupList as SelectList, "-- Select group --", new { @class = "w-full rounded-lg border-gray-300" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Employee Code</label>
+                @Html.TextBoxFor(m => m.EmployeeCode, new { @class = "w-full rounded-lg border-gray-300" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                @Html.TextBoxFor(m => m.Department, new { @class = "w-full rounded-lg border-gray-300" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                @Html.TextBoxFor(m => m.Position, new { @class = "w-full rounded-lg border-gray-300" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Hired Date</label>
+                @Html.TextBoxFor(m => m.HiredDate, "{0:yyyy-MM-dd}", new { @class = "w-full rounded-lg border-gray-300", type = "date" })
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                @Html.TextAreaFor(m => m.Note, 4, 30, new { @class = "w-full rounded-lg border-gray-300" })
+            </div>
+        </div>
+
+        <label class="flex items-center gap-2 text-sm">@Html.CheckBoxFor(m => m.IsActive) <span>Active</span></label>
+        <div class="flex justify-end gap-3">
+            <a href="@Url.Action("EmployeeProfiles", "Admin_65133295")" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
+                Cancel
+            </a>
+            <button type="submit" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Save</button>
+        </div>
+    </div>
+}

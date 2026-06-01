@@ -13,6 +13,7 @@ namespace Project_65133295.Models
 
         [Required]
         [StringLength(100)]
+        [Index("IX_SystemSettings_SettingKey", IsUnique = true)]
         public string SettingKey { get; set; }
 
         public string SettingValue { get; set; }
@@ -20,6 +21,6 @@ namespace Project_65133295.Models
         [StringLength(255)]
         public string Description { get; set; }
 
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
     }
 }

@@ -29,9 +29,9 @@ namespace Project_65133295.Models
 
         public int? RelatedEntityID { get; set; }
 
-        public bool? IsRead { get; set; }
+        public bool IsRead { get; set; } = false;
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public DateTime? ReadAt { get; set; }
 

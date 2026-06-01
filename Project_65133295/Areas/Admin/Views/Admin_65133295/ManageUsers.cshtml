@@ -10,7 +10,9 @@
     int totalPages = ViewBag.TotalPages ?? 1;
     int totalUsers = ViewBag.TotalUsers ?? 0;
     string query = ViewBag.Query as string ?? "";
-    bool? currentRole = ViewBag.CurrentRole as bool?;
+    string currentRole = ViewBag.CurrentRole as string ?? "";
+    string roleFilter = currentRole == "false" ? "admin" : currentRole == "true" ? "customer" : currentRole;
+    int currentUserId = ViewBag.CurrentUserID != null ? (int)ViewBag.CurrentUserID : 0;
 }
 
 @using (Html.BeginForm())
@@ -23,6 +25,12 @@
     <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <p class="text-sm text-gray-500 mt-1">Total: <span class="font-semibold text-primary">@totalUsers</span> users</p>
+            @if (ViewBag.IsAdminUser as bool? == true)
+            {
+                <a href="@Url.Action("CreateUser", "Admin_65133295")" class="inline-flex items-center mt-3 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary-dark transition-all">
+                    + Create User
+                </a>
+            }
         </div>
         
         <!-- Search & Filter -->
@@ -31,9 +39,10 @@
             
             <!-- Role Filter -->
             <select name="role" class="block w-full sm:w-40 border border-gray-200 rounded-xl py-2 px-3 bg-gray-50 text-sm focus:outline-none focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary transition-all" onchange="this.form.submit()">
-                <option value="" @(!currentRole.HasValue ? "selected" : "")>All Roles</option>
-                <option value="true" @(currentRole == true ? "selected" : "")>User</option>
-                <option value="false" @(currentRole == false ? "selected" : "")>Admin</option>
+                <option value="" @(string.IsNullOrEmpty(roleFilter) ? "selected" : "")>All Roles</option>
+                <option value="admin" @(roleFilter == "admin" ? "selected" : "")>Admin</option>
+                <option value="staff" @(roleFilter == "staff" ? "selected" : "")>Staff</option>
+                <option value="customer" @(roleFilter == "customer" ? "selected" : "")>Customer</option>
             </select>
 
             <!-- Search Input -->
@@ -59,6 +68,7 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">User</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Liên hệ</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Registered Date</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Permissions</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
                     <th scope="col" class="relative px-6 py-3">
                         <span class="sr-only">Actions</span>
@@ -70,8 +80,12 @@
                 {
                     foreach (var user in Model)
                     {
-                        bool isActive = user.IsActive ?? true;
-                        bool isUserRole = user.Role == Project_65133295.Models.UserRole.Khach; // Khach == regular user
+                        bool isActive = user.IsActive;
+                        bool isCustomer = user.Role == Project_65133295.Models.UserRole.Khach;
+                        bool isStaff = user.Role == Project_65133295.Models.UserRole.NhanVien;
+                        bool isAdmin = user.Role == Project_65133295.Models.UserRole.Admin;
+                        var empProfile = user.EmployeeProfile;
+                        var empGroup = empProfile?.EmployeeGroup;
                         
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -84,8 +98,31 @@
                                     <div class="ml-4">
                                         <div class="text-sm font-bold text-gray-900">@(((user.FirstName ?? "") + " " + (user.LastName ?? "")).Trim())</div>
                                         <div class="text-xs text-gray-500">@user.Email</div>
-                                        @if (!isUserRole) {
+                                        @if (empProfile != null)
+                                        {
+                                            <div class="mt-1 flex flex-wrap items-center gap-1 text-[10px]">
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">
+                                                    @(empGroup?.GroupCode ?? "EMP")
+                                                </span>
+                                                <span class="text-gray-400">
+                                                    @(empGroup?.GroupName ?? "Employee")
+                                                </span>
+                                                @if (!string.IsNullOrWhiteSpace(empProfile.EmployeeCode))
+                                                {
+                                                    <span class="text-gray-400">#@empProfile.EmployeeCode</span>
+                                                }
+                                            </div>
+                                        }
+                                        @if (isAdmin) {
                                             <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-purple-100 text-purple-800">Admin</span>
+                                        }
+                                        else if (isStaff)
+                                        {
+                                            <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800">Staff</span>
+                                        }
+                                        else if (isCustomer)
+                                        {
+                                            <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">Customer</span>
                                         }
                                     </div>
                                 </div>
@@ -94,7 +131,39 @@
                                 <div class="text-sm text-gray-900">@(user.PhoneNumber ?? "Not updated")</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                @(user.CreatedAt?.ToString("dd/MM/yyyy") ?? "N/A")
+                                @user.CreatedAt.ToString("dd/MM/yyyy")
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                @if (isStaff && empGroup != null)
+                                {
+                                    <div class="space-y-1">
+                                        <div class="flex flex-wrap items-center gap-1">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold text-[10px]">
+                                                @(empGroup.GroupCode ?? "EMP")
+                                            </span>
+                                            <span class="text-gray-700 font-medium">
+                                                @(empGroup.GroupName ?? "Employee")
+                                            </span>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1 text-[10px]">
+                                            @if (empGroup.CanViewRoom) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">View room</span> }
+                                            @if (empGroup.CanEditRoom) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Edit room</span> }
+                                            @if (empGroup.CanCreateBooking) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Create booking</span> }
+                                            @if (empGroup.CanApproveBooking) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Approve booking</span> }
+                                            @if (empGroup.CanCreateContract) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Create contract</span> }
+                                            @if (empGroup.CanManageContract) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Manage contract</span> }
+                                            @if (empGroup.CanCreatePayment) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Create payment</span> }
+                                            @if (empGroup.CanTrackPayment) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Track payment</span> }
+                                            @if (empGroup.CanViewTenantProfile) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Tenant profile</span> }
+                                            @if (empGroup.CanManageReview) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Manage review</span> }
+                                            @if (empGroup.CanViewBookingHistory) { <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">Booking history</span> }
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-gray-400">—</span>
+                                }
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if (isActive)
@@ -129,7 +198,7 @@
                                         </button>
                                     }
                                     
-                                    @if (isUserRole) 
+                                    @if (isCustomer) 
                                     {
                                         <button onclick="deleteUser(@user.UserID, '@user.Email')" 
                                                 class="text-gray-400 hover:text-red-600 transition-colors" 
@@ -145,7 +214,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="5" class="px-6 py-20 text-center">
+                        <td colspan="6" class="px-6 py-20 text-center">
                             <div class="text-gray-400">
                                 <svg class="mx-auto h-12 w-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                 <p class="text-gray-500">@(string.IsNullOrEmpty(query) ? "Chưa có người dùng nào" : "Không tìm thấy kết quả phù hợp")</p>
@@ -164,8 +233,8 @@
             <form id="paginationForm" action="@Url.Action("ManageUsers")" method="get">
                 <input type="hidden" name="query" value="@query" />
                 <input type="hidden" name="page" id="pageInput" value="@currentPage" />
-                @if (currentRole.HasValue) {
-                    <input type="hidden" name="role" value="@currentRole.Value.ToString().ToLower()" />
+                @if (!string.IsNullOrWhiteSpace(roleFilter)) {
+                    <input type="hidden" name="role" value="@roleFilter" />
                 }
                 
                 <div class="flex items-center justify-between">
@@ -252,6 +321,16 @@
         }
 
         function toggleLock(userId, userEmail, isUnlocking) {
+            if (userId === @currentUserId) {
+                Swal.fire({
+                    title: 'Không thể thực hiện',
+                    text: 'Bạn không thể khóa chính tài khoản đang đăng nhập.',
+                    icon: 'warning',
+                    confirmButtonColor: '#facc15'
+                });
+                return;
+            }
+
             const action = isUnlocking ? 'unlock' : 'lock';
             const title = isUnlocking ? 'Unlock account?' : 'Lock account?';
             const confirmText = isUnlocking ? 'Unlock' : 'Lock';

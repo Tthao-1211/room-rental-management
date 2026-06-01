@@ -110,7 +110,7 @@
                                                 @(log.Users?.Email ?? "Hệ thống")
                                             </div>
                                             <div class="text-xs text-gray-500">
-                                                @(log.CreatedAt?.ToString("dd/MM/yyyy HH:mm:ss") ?? "N/A")
+                                                @log.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")
                                             </div>
                                             <div class="text-[10px] text-gray-400 mt-0.5">IP: @(log.IPAddress ?? "N/A")</div>
                                         </div>

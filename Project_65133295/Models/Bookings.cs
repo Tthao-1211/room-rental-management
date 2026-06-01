@@ -23,7 +23,7 @@ namespace Project_65133295.Models
 
         [Required]
         [StringLength(30)]
-        public string BookingStatus { get; set; }
+        public string BookingStatus { get; set; } = "Pending";
 
         public DateTime CheckInDate { get; set; }
 
@@ -35,9 +35,9 @@ namespace Project_65133295.Models
 
         public string Notes { get; set; }
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         public int? ApprovedBy { get; set; }
 

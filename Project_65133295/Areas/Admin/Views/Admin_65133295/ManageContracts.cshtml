@@ -96,7 +96,7 @@
                         <tr class="hover:bg-gray-50 transition-colors group">
                             <td class="px-6 py-4">
                                 <div class="text-sm font-bold text-gray-900">@item.ContractNumber</div>
-                                <div class="text-xs text-gray-500">Ngày ký: @(item.CreatedAt.HasValue ? item.CreatedAt.Value.ToString("dd/MM/yyyy") : "-")</div>
+                                <div class="text-xs text-gray-500">Ngày ký: @item.CreatedAt.ToString("dd/MM/yyyy")</div>
                             </td>
                             <td class="px-6 py-4">
                                 @if (tenant != null)

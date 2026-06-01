@@ -1,0 +1,75 @@
+@model Project_65133295.Models.Forms_65133295.AdminCreateUserViewModel_65133295
+
+@{
+    ViewBag.Title = "Create User";
+    ViewBag.PageTitle = "Create User";
+    ViewBag.PageDescription = "Create a new account for admin management";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { autocomplete = "off" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+        @Html.ValidationSummary(true, "", new { @class = "text-red-600 text-sm" })
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                @Html.TextBoxFor(m => m.LastName, new { @class = "w-full rounded-lg border-gray-300", autocomplete = "off" })
+                @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-red-500 text-sm" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                @Html.TextBoxFor(m => m.FirstName, new { @class = "w-full rounded-lg border-gray-300", autocomplete = "off" })
+                @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-red-500 text-sm" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                @Html.TextBoxFor(m => m.Email, new { @class = "w-full rounded-lg border-gray-300", type = "email", autocomplete = "off" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-red-500 text-sm" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "w-full rounded-lg border-gray-300", autocomplete = "off" })
+                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-red-500 text-sm" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                @Html.DropDownListFor(m => m.Role, ViewBag.RoleList as SelectList, new { @class = "w-full rounded-lg border-gray-300" })
+                @Html.ValidationMessageFor(m => m.Role, "", new { @class = "text-red-500 text-sm" })
+            </div>
+            <div class="flex items-end">
+                <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                    @Html.CheckBoxFor(m => m.IsActive)
+                    <span>Active</span>
+                </label>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                @Html.PasswordFor(m => m.Password, new { @class = "w-full rounded-lg border-gray-300", autocomplete = "new-password" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-red-500 text-sm" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "w-full rounded-lg border-gray-300", autocomplete = "new-password" })
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-red-500 text-sm" })
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                @Html.CheckBoxFor(m => m.IsEmailVerified)
+                <span>Email verified</span>
+            </label>
+            <div class="flex items-center gap-3">
+                <a href="@Url.Action("ManageUsers", "Admin_65133295")" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
+                    Cancel
+                </a>
+                <button type="submit" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+}

@@ -13,7 +13,8 @@ namespace Project_65133295.Models
         }
 
         public virtual DbSet<ActivityLogs> ActivityLogs { get; set; }
-        
+        public virtual DbSet<EmployeeGroup> EmployeeGroups { get; set; }
+        public virtual DbSet<EmployeeProfile> EmployeeProfiles { get; set; }
         public virtual DbSet<Bookings> Bookings { get; set; }
         public virtual DbSet<Contracts> Contracts { get; set; }
         public virtual DbSet<EmailVerificationTokens> EmailVerificationTokens { get; set; }
@@ -46,7 +47,7 @@ namespace Project_65133295.Models
 
             modelBuilder.Entity<Reviews>()
                 .Property(e => e.Rating)
-                .HasPrecision(3, 2);
+                .HasPrecision(3, 1);
 
             modelBuilder.Entity<Room>()
                 .Property(e => e.Area)
@@ -59,6 +60,18 @@ namespace Project_65133295.Models
             modelBuilder.Entity<RoomStatuses>()
                 .HasMany(e => e.Rooms)
                 .WithRequired(e => e.RoomStatuses)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<EmployeeProfile>()
+                .HasRequired(e => e.User)
+                .WithMany(u => u.EmployeeProfiles)
+                .HasForeignKey(e => e.UserID)
+                .WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<EmployeeProfile>()
+                .HasRequired(e => e.EmployeeGroup)
+                .WithMany(g => g.EmployeeProfiles)
+                .HasForeignKey(e => e.GroupID)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<User>()

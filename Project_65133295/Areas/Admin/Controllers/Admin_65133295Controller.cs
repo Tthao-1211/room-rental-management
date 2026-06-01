@@ -10,6 +10,7 @@ using System.Globalization;
 using Project_65133295.Controllers;
 using System.Web.Routing;
 using System.Web.Security;
+using Project_65133295.Models.Forms_65133295;
 
 namespace Project_65133295.Areas.Admin.Controllers
 {
@@ -26,8 +27,106 @@ namespace Project_65133295.Areas.Admin.Controllers
             {
                 int userId = Convert.ToInt32(Session["UserID"]);
                 ViewBag.NotificationCount = db.Notifications.Count(n => n.RecipientID == userId && n.IsRead != true);
+
+                var currentUser = db.Users
+                    .Include("EmployeeProfiles.EmployeeGroup")
+                    .FirstOrDefault(u => u.UserID == userId);
+
+                ViewBag.CurrentUserID = userId;
+                ViewBag.IsAdminUser = currentUser?.Role == UserRole.Admin;
+                ViewBag.CurrentEmployeeGroup = currentUser?.EmployeeProfile?.EmployeeGroup;
+
+                if (currentUser?.EmployeeProfile?.EmployeeGroup != null)
+                {
+                    ViewBag.EmployeeGroupCode = currentUser.EmployeeProfile.EmployeeGroup.GroupCode;
+                    ViewBag.EmployeeGroupName = currentUser.EmployeeProfile.EmployeeGroup.GroupName;
+                }
             }
+
+            if (!IsAuthorizedForCurrentAction(filterContext))
+            {
+                filterContext.Result = new HttpUnauthorizedResult("Bạn không có quyền truy cập chức năng này.");
+                return;
+            }
+
             base.OnActionExecuting(filterContext);
+        }
+
+        private bool IsAuthorizedForCurrentAction(ActionExecutingContext filterContext)
+        {
+            if (Session["UserID"] == null)
+            {
+                return false;
+            }
+
+            int userId = Convert.ToInt32(Session["UserID"]);
+            var currentUser = db.Users
+                .Include("EmployeeProfiles.EmployeeGroup")
+                .FirstOrDefault(u => u.UserID == userId);
+
+            if (currentUser == null)
+            {
+                return false;
+            }
+
+            if (currentUser.Role == UserRole.Admin)
+            {
+                return true;
+            }
+
+            var group = currentUser.EmployeeProfile?.EmployeeGroup;
+            if (group == null)
+            {
+                return false;
+            }
+
+            string action = filterContext.ActionDescriptor.ActionName;
+
+            switch (action)
+            {
+                case "RenderAdminNotificationBadge":
+                case "Notifications":
+                case "MarkAsRead":
+                case "ClearAllNotifications":
+                case "DeleteNotification":
+                case "DeleteAllNotifications":
+                    return true;
+
+                case "Index":
+                    return group.CanViewRoomDashboard || group.CanViewRevenueDashboard;
+
+                case "ManageRooms":
+                case "CreateRoom":
+                case "EditRoom":
+                case "UpdateRoomStatus":
+                case "DeleteRoom":
+                    return group.CanViewRoom || group.CanEditRoom || group.CanViewRoomDashboard;
+
+                case "ManageBookings":
+                case "ApproveBooking":
+                case "DetailsBooking":
+                case "RejectBooking":
+                    return group.CanCreateBooking || group.CanApproveBooking || group.CanViewBookingHistory;
+
+                case "ManageContracts":
+                case "CreateInvoice":
+                case "CreateMonthlyInvoices":
+                case "CheckoutContract":
+                    return group.CanCreateContract || group.CanManageContract || group.CanCreatePayment || group.CanTrackPayment || group.CanViewRevenueDashboard;
+
+                case "InvoiceDetails":
+                    return group.CanCreatePayment || group.CanTrackPayment || group.CanViewRevenueDashboard;
+
+                case "ManageUsers":
+                    return group.CanViewTenantProfile;
+
+                case "ApproveReviews":
+                case "UpdateReviewStatus":
+                    return group.CanManageReview;
+
+                default:
+                    return false;
+            }
         }
 
         [ChildActionOnly]
@@ -192,8 +291,8 @@ namespace Project_65133295.Areas.Admin.Controllers
                 .Take(5)
                 .Select(a => new RecentActivity_65133295
                 {
-                    Date = a.CreatedAt ?? DateTime.Now,
-                    User = a.Users.LastName + " " + a.Users.FirstName,
+                    Date = a.CreatedAt,
+                    User = ((a.Users.FirstName ?? "") + " " + (a.Users.LastName ?? "")).Trim(),
                     Action = a.ActionType,
                     Description = a.Description
                 }).ToList();
@@ -435,7 +534,7 @@ namespace Project_65133295.Areas.Admin.Controllers
                 {
                     ImageID = i.ImageID,
                     ImageURL = i.ImageUrl,
-                    IsPrimary = i.IsMainImage ?? false
+                    IsPrimary = i.IsMainImage
                 }).ToList()
             };
 
@@ -631,7 +730,7 @@ namespace Project_65133295.Areas.Admin.Controllers
             {
                 ImageID = i.ImageID,
                 ImageURL = i.ImageUrl,
-                IsPrimary = i.IsMainImage ?? false
+                IsPrimary = i.IsMainImage
             }).ToList();
 
             return View(model);
@@ -1442,9 +1541,63 @@ namespace Project_65133295.Areas.Admin.Controllers
         }
 
         // GET: Admin/Admin_65133295/ManageUsers
-        public ActionResult ManageUsers()
+        public ActionResult ManageUsers(string role = "", string query = "", int page = 1)
         {
-            var users = db.Users.OrderBy(u => u.UserID).ToList();
+            var usersQuery = db.Users
+                .Include("EmployeeProfiles.EmployeeGroup")
+                .AsQueryable();
+
+            string normalizedRole = (role ?? string.Empty).Trim().ToLowerInvariant();
+            switch (normalizedRole)
+            {
+                case "true":
+                case "customer":
+                case "user":
+                case "khach":
+                    usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.Khach);
+                    break;
+                case "false":
+                case "admin":
+                    usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.Admin);
+                    break;
+                case "staff":
+                case "nhanvien":
+                    usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.NhanVien);
+                    break;
+            }
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                string term = query.Trim().ToLowerInvariant();
+                usersQuery = usersQuery.Where(u =>
+                    (u.Username ?? "").ToLower().Contains(term) ||
+                    (u.Email ?? "").ToLower().Contains(term) ||
+                    (u.FirstName ?? "").ToLower().Contains(term) ||
+                    (u.LastName ?? "").ToLower().Contains(term) ||
+                    (u.PhoneNumber ?? "").ToLower().Contains(term) ||
+                    u.EmployeeProfiles.Any(ep =>
+                        (ep.EmployeeCode ?? "").ToLower().Contains(term) ||
+                        (ep.EmployeeGroup.GroupCode ?? "").ToLower().Contains(term) ||
+                        (ep.EmployeeGroup.GroupName ?? "").ToLower().Contains(term)));
+            }
+
+            int pageSize = 10;
+            int totalUsers = usersQuery.Count();
+            int totalPages = (int)System.Math.Ceiling((double)totalUsers / pageSize);
+            page = System.Math.Max(1, System.Math.Min(page, totalPages > 0 ? totalPages : 1));
+
+            var users = usersQuery
+                .OrderBy(u => u.UserID)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalUsers = totalUsers;
+            ViewBag.Query = query;
+            ViewBag.CurrentRole = normalizedRole;
+
             return View(users);
         }
 
@@ -1458,8 +1611,13 @@ namespace Project_65133295.Areas.Admin.Controllers
                 var user = db.Users.Find(userId);
                 if (user == null) return Json(new { success = false, message = "Người dùng không tồn tại." });
 
+                if (Session["UserID"] != null && System.Convert.ToInt32(Session["UserID"]) == userId)
+                {
+                    return Json(new { success = false, message = "Không thể khóa chính tài khoản đang đăng nhập." });
+                }
+
                 // Toggle active state
-                bool newState = !(user.IsActive ?? true);
+                bool newState = !user.IsActive;
                 user.IsActive = newState;
                 db.SaveChanges();
 
@@ -1494,7 +1652,7 @@ namespace Project_65133295.Areas.Admin.Controllers
             }
         }
 
-        // POST: Admin/Admin_65133295/DeleteUser
+                // POST: Admin/Admin_65133295/DeleteUser
         [HttpPost]
         [ValidateAntiForgeryToken]
         public JsonResult DeleteUser(int id)
@@ -1502,83 +1660,137 @@ namespace Project_65133295.Areas.Admin.Controllers
             try
             {
                 var user = db.Users.Find(id);
-                if (user == null) return Json(new { success = false, message = "Người dùng không tồn tại." });
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Ng??i d?ng kh?ng t?n t?i." });
+                }
 
-                // Prevent deleting admin/staff via this endpoint
                 if (user.Role != Project_65133295.Models.UserRole.Khach)
                 {
-                    return Json(new { success = false, message = "Không thể xóa tài khoản có quyền cao hơn." });
+                    return Json(new { success = false, message = "Kh?ng th? x?a t?i kho?n c? quy?n cao h?n." });
                 }
 
-                // Check for related records that prevent deletion
-                var related = new List<string>();
-                if (db.Bookings.Any(b => b.UserID == id)) related.Add("bookings (đặt phòng)");
-                if (db.Payments.Any(p => p.UserID == id)) related.Add("payments (hóa đơn)");
-                if (db.Notifications.Any(n => n.RecipientID == id || n.SenderID == id)) related.Add("notifications");
-                if (db.ActivityLogs.Any(a => a.UserID == id)) related.Add("activity logs");
-                if (db.Rooms.Any(r => r.CurrentTenantID == id)) related.Add("rooms (current tenant)");
-
-                if (related.Any())
+                using (var transaction = db.Database.BeginTransaction())
                 {
-                    // If there are related records, reassign them to a placeholder 'deleted' user
-                    using (var transaction = db.Database.BeginTransaction())
+                    try
                     {
-                        try
+                        var rooms = db.Rooms.Where(r => r.CurrentTenantID == id).ToList();
+                        foreach (var room in rooms)
                         {
-                            int placeholderId = EnsureDeletedPlaceholderUser();
-
-                            // Reassign bookings
-                            var bookings = db.Bookings.Where(b => b.UserID == id).ToList();
-                            foreach (var b in bookings) b.UserID = placeholderId;
-
-                            // Reassign payments (tenant)
-                            var payments = db.Payments.Where(p => p.UserID == id).ToList();
-                            foreach (var p in payments) p.UserID = placeholderId;
-
-                            // Reassign notifications
-                            var notiRec = db.Notifications.Where(n => n.RecipientID == id).ToList();
-                            foreach (var n in notiRec) n.RecipientID = placeholderId;
-                            var notiSend = db.Notifications.Where(n => n.SenderID == id).ToList();
-                            foreach (var n in notiSend) n.SenderID = placeholderId;
-
-                            // Reassign activity logs
-                            var logs = db.ActivityLogs.Where(a => a.UserID == id).ToList();
-                            foreach (var l in logs) l.UserID = placeholderId;
-
-                            // Reassign rooms current tenant
-                            var rooms = db.Rooms.Where(r => r.CurrentTenantID == id).ToList();
-                            foreach (var r in rooms) r.CurrentTenantID = placeholderId;
-
-                            db.SaveChanges();
-
-                            // Now safe to remove user
-                            db.Users.Remove(user);
-                            db.SaveChanges();
-
-                            LogActivity("Delete", "Users", user.UserID, null, null, $"Deleted user {user.Email} (reassigned related records to {placeholderId})");
-
-                            transaction.Commit();
-                            return Json(new { success = true, message = "Người dùng đã được xóa và dữ liệu liên quan đã được chuyển sang tài khoản placeholder." });
+                            room.CurrentTenantID = null;
                         }
-                        catch (Exception ex)
-                        {
-                            transaction.Rollback();
-                            return Json(new { success = false, message = "Lỗi khi chuyển/xóa dữ liệu liên quan: " + ex.Message });
-                        }
+
+                        var emailTokens = db.EmailVerificationTokens.Where(t => t.UserID == id).ToList();
+                        var resetTokens = db.PasswordResetTokens.Where(t => t.UserID == id).ToList();
+                        var activityLogs = db.ActivityLogs.Where(a => a.UserID == id).ToList();
+                        var reviews = db.Reviews.Where(r => r.UserID == id).ToList();
+                        var recipientNotifications = db.Notifications.Where(n => n.RecipientID == id).ToList();
+                        var senderNotifications = db.Notifications.Where(n => n.SenderID == id).ToList();
+                        var notifications = recipientNotifications
+                            .Concat(senderNotifications)
+                            .GroupBy(n => n.NotificationID)
+                            .Select(g => g.First())
+                            .ToList();
+                        var bookings = db.Bookings.Where(b => b.UserID == id).ToList();
+                        var bookingIds = bookings.Select(b => b.BookingID).ToList();
+                        var contracts = db.Contracts.Where(c => bookingIds.Contains(c.BookingID)).ToList();
+                        var contractIds = contracts.Select(c => c.ContractID).ToList();
+                        var tenantPayments = db.Payments.Where(p => p.UserID == id).ToList();
+                        var contractPayments = db.Payments.Where(p => contractIds.Contains(p.ContractID)).ToList();
+                        var payments = tenantPayments.Concat(contractPayments).GroupBy(p => p.PaymentID).Select(g => g.First()).ToList();
+                        var paymentIds = payments.Select(p => p.PaymentID).ToList();
+                        var fees = db.Fees.Where(f => paymentIds.Contains(f.PaymentID)).ToList();
+
+                        db.Fees.RemoveRange(fees);
+                        db.Payments.RemoveRange(payments);
+                        db.Contracts.RemoveRange(contracts);
+                        db.Bookings.RemoveRange(bookings);
+                        db.Reviews.RemoveRange(reviews);
+                        db.Notifications.RemoveRange(notifications);
+                        db.ActivityLogs.RemoveRange(activityLogs);
+                        db.PasswordResetTokens.RemoveRange(resetTokens);
+                        db.EmailVerificationTokens.RemoveRange(emailTokens);
+                        db.Users.Remove(user);
+
+                        db.SaveChanges();
+                        transaction.Commit();
+
+                        LogActivity("Delete", "Users", user.UserID, null, null, $"Deleted customer user {user.Email} and related history");
+                        return Json(new { success = true, message = "Ng??i d?ng kh?ch ?? ???c x?a." });
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        return Json(new { success = false, message = "L?i khi x?a t?i kho?n kh?ch: " + ex.Message });
                     }
                 }
-
-                // No related records, safe to delete
-                db.Users.Remove(user);
-                db.SaveChanges();
-
-                LogActivity("Delete", "Users", user.UserID, null, null, $"Deleted user {user.Email}");
-
-                return Json(new { success = true, message = "Người dùng đã được xóa." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Lỗi khi xóa người dùng: " + ex.Message });
+                return Json(new { success = false, message = "L?i khi x?a ng??i d?ng: " + ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public ActionResult CreateUser()
+        {
+            ViewBag.RoleList = GetUserRoleSelectList();
+            return View(new AdminCreateUserViewModel_65133295
+            {
+                Role = Project_65133295.Models.UserRole.Khach,
+                IsActive = true,
+                IsEmailVerified = true
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateUser(AdminCreateUserViewModel_65133295 model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.RoleList = GetUserRoleSelectList(model.Role);
+                return View(model);
+            }
+
+            if (db.Users.Any(u => u.Email == model.Email))
+            {
+                ModelState.AddModelError("Email", "Email already exists.");
+                ViewBag.RoleList = GetUserRoleSelectList(model.Role);
+                return View(model);
+            }
+
+            try
+            {
+                string username = BuildUniqueUsername(model.Email);
+
+                var newUser = new Project_65133295.Models.User
+                {
+                    Username = username,
+                    LastName = model.LastName,
+                    FirstName = model.FirstName,
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber,
+                    PasswordHash = model.Password,
+                    Role = model.Role,
+                    IsActive = model.IsActive,
+                    IsEmailVerified = model.IsEmailVerified,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                db.Users.Add(newUser);
+                db.SaveChanges();
+
+                LogActivity("Create", "Users", newUser.UserID, null, null, $"Created user {newUser.Email} with role {newUser.Role}");
+                TempData["SuccessMessage"] = $"Đã tạo tài khoản {newUser.Email}.";
+                return RedirectToAction("ManageUsers");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Không thể tạo tài khoản: " + ex.Message);
+                ViewBag.RoleList = GetUserRoleSelectList(model.Role);
+                return View(model);
             }
         }
 
@@ -1603,6 +1815,199 @@ namespace Project_65133295.Areas.Admin.Controllers
             db.Users.Add(user);
             db.SaveChanges();
             return user.UserID;
+        }
+
+        private SelectList GetUserRoleSelectList(Project_65133295.Models.UserRole selectedRole = Project_65133295.Models.UserRole.Khach)
+        {
+            var items = new[]
+            {
+                new { Value = (int)Project_65133295.Models.UserRole.Admin, Text = "Admin" },
+                new { Value = (int)Project_65133295.Models.UserRole.NhanVien, Text = "Nhân viên" },
+                new { Value = (int)Project_65133295.Models.UserRole.Khach, Text = "Khách" }
+            };
+
+            return new SelectList(items, "Value", "Text", (int)selectedRole);
+        }
+
+        private string BuildUniqueUsername(string email)
+        {
+            var baseName = (email ?? "user").Split('@')[0];
+            baseName = new string(baseName.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(baseName)) baseName = "user";
+
+            string candidate = baseName;
+            int suffix = 1;
+            while (db.Users.Any(u => u.Username == candidate))
+            {
+                candidate = baseName + suffix.ToString();
+                suffix++;
+            }
+
+            return candidate;
+        }
+
+        // -----------------------------
+        // Employee Groups CRUD
+        // -----------------------------
+        public ActionResult EmployeeGroups()
+        {
+            var groups = db.EmployeeGroups
+                .Include(g => g.EmployeeProfiles)
+                .OrderBy(g => g.GroupCode)
+                .ToList();
+
+            return View(groups);
+        }
+
+        public ActionResult EmployeeGroupDetails(int id)
+        {
+            var group = db.EmployeeGroups
+                .Include(g => g.EmployeeProfiles)
+                .FirstOrDefault(g => g.GroupID == id);
+
+            if (group == null) return HttpNotFound();
+            return View(group);
+        }
+
+        public ActionResult CreateEmployeeGroup()
+        {
+            return View(new EmployeeGroup { IsActive = true });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateEmployeeGroup(EmployeeGroup model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            model.CreatedAt = DateTime.Now;
+            model.UpdatedAt = DateTime.Now;
+            db.EmployeeGroups.Add(model);
+            db.SaveChanges();
+            return RedirectToAction("EmployeeGroups");
+        }
+
+        public ActionResult EditEmployeeGroup(int id)
+        {
+            var group = db.EmployeeGroups.Find(id);
+            if (group == null) return HttpNotFound();
+            return View(group);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditEmployeeGroup(EmployeeGroup model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var group = db.EmployeeGroups.Find(model.GroupID);
+            if (group == null) return HttpNotFound();
+
+            group.GroupCode = model.GroupCode;
+            group.GroupName = model.GroupName;
+            group.Description = model.Description;
+            group.CanViewRoom = model.CanViewRoom;
+            group.CanEditRoom = model.CanEditRoom;
+            group.CanCreateBooking = model.CanCreateBooking;
+            group.CanApproveBooking = model.CanApproveBooking;
+            group.CanViewRoomDashboard = model.CanViewRoomDashboard;
+            group.CanCreateContract = model.CanCreateContract;
+            group.CanManageContract = model.CanManageContract;
+            group.CanCreatePayment = model.CanCreatePayment;
+            group.CanTrackPayment = model.CanTrackPayment;
+            group.CanViewRevenueDashboard = model.CanViewRevenueDashboard;
+            group.CanViewTenantProfile = model.CanViewTenantProfile;
+            group.CanManageReview = model.CanManageReview;
+            group.CanViewBookingHistory = model.CanViewBookingHistory;
+            group.IsActive = model.IsActive;
+            group.UpdatedAt = DateTime.Now;
+            db.SaveChanges();
+
+            return RedirectToAction("EmployeeGroups");
+        }
+
+        // -----------------------------
+        // Employee Profiles CRUD
+        // -----------------------------
+        public ActionResult EmployeeProfiles()
+        {
+            var profiles = db.EmployeeProfiles
+                .Include(p => p.User)
+                .Include(p => p.EmployeeGroup)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToList();
+
+            return View(profiles);
+        }
+
+        public ActionResult CreateEmployeeProfile()
+        {
+            ViewBag.GroupList = new SelectList(db.EmployeeGroups.OrderBy(g => g.GroupCode), "GroupID", "GroupName");
+            ViewBag.UserList = new SelectList(
+                db.Users.Where(u => u.Role == UserRole.NhanVien && !db.EmployeeProfiles.Any(p => p.UserID == u.UserID)).OrderBy(u => u.Username),
+                "UserID",
+                "Username");
+            return View(new EmployeeProfile { IsActive = true });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateEmployeeProfile(EmployeeProfile model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.GroupList = new SelectList(db.EmployeeGroups.OrderBy(g => g.GroupCode), "GroupID", "GroupName", model.GroupID);
+                ViewBag.UserList = new SelectList(
+                    db.Users.Where(u => u.Role == UserRole.NhanVien && !db.EmployeeProfiles.Any(p => p.UserID == u.UserID)).OrderBy(u => u.Username),
+                    "UserID",
+                    "Username",
+                    model.UserID);
+                return View(model);
+            }
+
+            model.CreatedAt = DateTime.Now;
+            model.UpdatedAt = DateTime.Now;
+            db.EmployeeProfiles.Add(model);
+            db.SaveChanges();
+            return RedirectToAction("EmployeeProfiles");
+        }
+
+        public ActionResult EditEmployeeProfile(int id)
+        {
+            var profile = db.EmployeeProfiles.Find(id);
+            if (profile == null) return HttpNotFound();
+
+            ViewBag.GroupList = new SelectList(db.EmployeeGroups.OrderBy(g => g.GroupCode), "GroupID", "GroupName", profile.GroupID);
+            ViewBag.UserList = new SelectList(db.Users.OrderBy(u => u.Username), "UserID", "Username", profile.UserID);
+            return View(profile);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditEmployeeProfile(EmployeeProfile model)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.GroupList = new SelectList(db.EmployeeGroups.OrderBy(g => g.GroupCode), "GroupID", "GroupName", model.GroupID);
+                ViewBag.UserList = new SelectList(db.Users.OrderBy(u => u.Username), "UserID", "Username", model.UserID);
+                return View(model);
+            }
+
+            var profile = db.EmployeeProfiles.Find(model.ProfileID);
+            if (profile == null) return HttpNotFound();
+
+            profile.UserID = model.UserID;
+            profile.GroupID = model.GroupID;
+            profile.EmployeeCode = model.EmployeeCode;
+            profile.Department = model.Department;
+            profile.Position = model.Position;
+            profile.HiredDate = model.HiredDate;
+            profile.Note = model.Note;
+            profile.IsActive = model.IsActive;
+            profile.UpdatedAt = DateTime.Now;
+            db.SaveChanges();
+
+            return RedirectToAction("EmployeeProfiles");
         }
 
         // POST: Admin/Admin_65133295/CheckoutContract

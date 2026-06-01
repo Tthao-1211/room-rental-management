@@ -5,6 +5,9 @@
     ViewBag.PageTitle = "Personal Profile";
     ViewBag.PageDescription = "Your account details and settings";
     Layout = "~/Areas/User/Views/Shared/_LayoutUser.cshtml";
+
+    var employeeProfile = Model.EmployeeProfile;
+    var employeeGroup = employeeProfile?.EmployeeGroup;
 }
 
 <div class="mx-auto space-y-6">
@@ -38,7 +41,22 @@
             </div>
             <div>
                 <h1 class="text-3xl font-bold text-yellow-600">@Model.FirstName @Model.LastName</h1>
-                <p class="text-gray-500 font-light text-sm">@@@Model.Username • Member since @(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("MM/yyyy") : "-")</p>
+                <p class="text-gray-500 font-light text-sm">@@@Model.Username • Member since @Model.CreatedAt.ToString("MM/yyyy")</p>
+                @if (employeeProfile != null)
+                {
+                    <div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-800 font-semibold">
+                            @(employeeGroup?.GroupCode ?? "EMP")
+                        </span>
+                        <span class="text-gray-500">
+                            @(employeeGroup?.GroupName ?? "Employee")
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(employeeProfile.EmployeeCode))
+                        {
+                            <span class="text-gray-400">Mã NV: @employeeProfile.EmployeeCode</span>
+                        }
+                    </div>
+                }
             </div>
         </div>
     </div>

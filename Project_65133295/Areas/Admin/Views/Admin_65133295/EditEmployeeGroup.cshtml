@@ -1,0 +1,72 @@
+@model Project_65133295.Models.EmployeeGroup
+
+@{
+    ViewBag.Title = "Edit Employee Group";
+    ViewBag.PageTitle = "Edit Employee Group";
+    ViewBag.PageDescription = "Update group permissions";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.GroupID)
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+        @Html.ValidationSummary(true, "", new { @class = "text-red-600 text-sm" })
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Group Code</label>
+                @Html.TextBoxFor(m => m.GroupCode, new { @class = "w-full rounded-lg border-gray-300" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
+                @Html.TextBoxFor(m => m.GroupName, new { @class = "w-full rounded-lg border-gray-300" })
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                @Html.TextAreaFor(m => m.Description, 4, 30, new { @class = "w-full rounded-lg border-gray-300" })
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <fieldset class="p-4 border rounded-xl">
+                <legend class="px-2 text-sm font-semibold text-gray-700">VAN HANH</legend>
+                <div class="space-y-2 mt-2">
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanViewRoom) <span>Xem room</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanEditRoom) <span>Edit room</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanCreateBooking) <span>Create booking</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanApproveBooking) <span>Approve booking</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanViewRoomDashboard) <span>Room dashboard</span></label>
+                </div>
+            </fieldset>
+            <fieldset class="p-4 border rounded-xl">
+                <legend class="px-2 text-sm font-semibold text-gray-700">TAI CHINH</legend>
+                <div class="space-y-2 mt-2">
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanCreateContract) <span>Create contract</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanManageContract) <span>Manage contract</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanCreatePayment) <span>Create payment</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanTrackPayment) <span>Track payment</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanViewRevenueDashboard) <span>Revenue dashboard</span></label>
+                </div>
+            </fieldset>
+            <fieldset class="p-4 border rounded-xl">
+                <legend class="px-2 text-sm font-semibold text-gray-700">CSKH</legend>
+                <div class="space-y-2 mt-2">
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanViewTenantProfile) <span>View tenant profile</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanManageReview) <span>Manage review</span></label>
+                    <label class="flex items-center gap-2">@Html.CheckBoxFor(m => m.CanViewBookingHistory) <span>Booking history</span></label>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 text-sm">@Html.CheckBoxFor(m => m.IsActive) <span>Active</span></label>
+            <div class="flex items-center gap-3">
+                <a href="@Url.Action("EmployeeGroups", "Admin_65133295")" class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
+                    Cancel
+                </a>
+                <button type="submit" class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">Save</button>
+            </div>
+        </div>
+    </div>
+}

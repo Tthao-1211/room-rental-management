@@ -1,0 +1,61 @@
+@model IEnumerable<Project_65133295.Models.EmployeeGroup>
+
+@{
+    ViewBag.Title = "Employee Groups";
+    ViewBag.PageTitle = "Employee Groups";
+    ViewBag.PageDescription = "Manage employee permission groups";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-6 border-b border-gray-100 flex items-center justify-between gap-4">
+        <div>
+            <h1 class="text-xl font-bold text-gray-900">Employee Groups</h1>
+            <p class="text-sm text-gray-500">Total groups: @(Model?.Count() ?? 0)</p>
+        </div>
+        <a href="@Url.Action("CreateEmployeeGroup")" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold">
+            Create Group
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Code</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Employees</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Status</th>
+                    <th class="px-6 py-3"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var group in Model)
+                    {
+                        <tr>
+                            <td class="px-6 py-4 font-semibold text-gray-900">@group.GroupCode</td>
+                            <td class="px-6 py-4 text-gray-700">@group.GroupName</td>
+                            <td class="px-6 py-4 text-gray-700">@(group.EmployeeProfiles?.Count ?? 0)</td>
+                            <td class="px-6 py-4">
+                                @if (group.IsActive)
+                                {
+                                    <span class="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-semibold">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">Inactive</span>
+                                }
+                            </td>
+                            <td class="px-6 py-4 text-right space-x-2">
+                                <a href="@Url.Action("EmployeeGroupDetails", new { id = group.GroupID })" class="text-sm text-blue-600">Details</a>
+                                <a href="@Url.Action("EditEmployeeGroup", new { id = group.GroupID })" class="text-sm text-yellow-600">Edit</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

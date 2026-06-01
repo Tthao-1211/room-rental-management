@@ -19,6 +19,7 @@ namespace Project_65133295.Models
 
         [Required]
         [StringLength(50)]
+        [Index("IX_RoomStatuses_StatusName", IsUnique = true)]
         public string StatusName { get; set; }
 
         [StringLength(255)]

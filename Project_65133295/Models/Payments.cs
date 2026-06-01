@@ -26,6 +26,7 @@ namespace Project_65133295.Models
 
         [Required]
         [StringLength(50)]
+        [Index("IX_Payments_InvoiceNumber", IsUnique = true)]
         public string InvoiceNumber { get; set; }
 
         [Column(TypeName = "date")]
@@ -33,8 +34,9 @@ namespace Project_65133295.Models
 
         public decimal Amount { get; set; }
 
+        [Required]
         [StringLength(30)]
-        public string PaymentStatus { get; set; }
+        public string PaymentStatus { get; set; } = "Pending";
 
         [StringLength(50)]
         public string PaymentMethod { get; set; }
@@ -45,9 +47,9 @@ namespace Project_65133295.Models
 
         public string Notes { get; set; }
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         public virtual Contracts Contracts { get; set; }
 

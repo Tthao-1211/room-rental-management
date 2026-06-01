@@ -156,7 +156,9 @@ namespace Project_65133295.Controllers
             if (ModelState.IsValid)
             {
                 // Check user - Compare with PasswordHash
-                var user = db.Users.FirstOrDefault(u => u.Email == model.Email && u.PasswordHash == model.Password);
+                var user = db.Users
+                    .Include("EmployeeProfiles.EmployeeGroup")
+                    .FirstOrDefault(u => u.Email == model.Email && u.PasswordHash == model.Password);
                 if (user != null)
                 {
                     if (user.IsActive == true)
@@ -184,11 +186,17 @@ namespace Project_65133295.Controllers
                         }
                         
                         // Default redirect based on Role
-                            if (user.Role == Project_65133295.Models.UserRole.Admin || user.Role == Project_65133295.Models.UserRole.NhanVien)
-                            {
-                                return RedirectToAction("Index", "Admin_65133295", new { area = "Admin" });
-                            }
-                            return RedirectToAction("Index", "User_65133295", new { area = "User" });
+                        if (user.Role == Project_65133295.Models.UserRole.Admin)
+                        {
+                            return RedirectToAction("Index", "Admin_65133295", new { area = "Admin" });
+                        }
+
+                        if (user.Role == Project_65133295.Models.UserRole.NhanVien)
+                        {
+                            return RedirectToAction(GetStaffLandingAction(user), "Admin_65133295", new { area = "Admin" });
+                        }
+
+                        return RedirectToAction("Index", "User_65133295", new { area = "User" });
                     }
                     else
                     {
@@ -201,6 +209,42 @@ namespace Project_65133295.Controllers
                 }
             }
             return View(model);
+        }
+
+        private string GetStaffLandingAction(User user)
+        {
+            var group = user?.EmployeeProfile?.EmployeeGroup;
+            if (group == null)
+            {
+                return "ManageUsers";
+            }
+
+            if (group.CanViewTenantProfile)
+            {
+                return "ManageUsers";
+            }
+
+            if (group.CanManageReview)
+            {
+                return "ApproveReviews";
+            }
+
+            if (group.CanCreateContract || group.CanManageContract)
+            {
+                return "ManageContracts";
+            }
+
+            if (group.CanCreatePayment || group.CanTrackPayment || group.CanViewRevenueDashboard)
+            {
+                return "CreateMonthlyInvoices";
+            }
+
+            if (group.CanCreateBooking || group.CanApproveBooking || group.CanViewRoom || group.CanEditRoom || group.CanViewRoomDashboard)
+            {
+                return "ManageRooms";
+            }
+
+            return "Notifications";
         }
 
         // Register account

@@ -11,8 +11,10 @@ namespace Project_65133295.Models
         [Key]
         public int RoomUtilityID { get; set; }
 
+        [Index("UQ_RoomUtility", 1, IsUnique = true)]
         public int RoomID { get; set; }
 
+        [Index("UQ_RoomUtility", 2, IsUnique = true)]
         public int UtilityID { get; set; }
 
         public virtual Room Rooms { get; set; }

@@ -31,7 +31,7 @@ namespace Project_65133295.Models
 
         public string Description { get; set; }
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public virtual User Users { get; set; }
     }

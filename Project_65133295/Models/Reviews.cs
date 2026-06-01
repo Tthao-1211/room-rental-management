@@ -19,12 +19,13 @@ namespace Project_65133295.Models
 
         public string Comment { get; set; }
 
+        [Required]
         [StringLength(20)]
-        public string Status { get; set; }
+        public string Status { get; set; } = "Approved";
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         public virtual Room Rooms { get; set; }
 

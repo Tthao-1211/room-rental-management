@@ -37,8 +37,9 @@ namespace Project_65133295.Models
 
         public decimal Price { get; set; }
 
+        [Required]
         [StringLength(20)]
-        public string PriceUnit { get; set; }
+        public string PriceUnit { get; set; } = "VND/tháng";
 
         
 
@@ -48,9 +49,9 @@ namespace Project_65133295.Models
 
         public int? CurrentTenantID { get; set; }
 
-        public DateTime? CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public DateTime? UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         
 

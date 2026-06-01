@@ -79,7 +79,9 @@ namespace Project_65133295.Areas.User.Controllers
             if (Session["UserID"] == null) return RedirectToAction("Login", "Guest_65133295", new { area = "" });
             int userId = (int)Session["UserID"];
 
-            var user = db.Users.FirstOrDefault(u => u.UserID == userId);
+            var user = db.Users
+                .Include("EmployeeProfiles.EmployeeGroup")
+                .FirstOrDefault(u => u.UserID == userId);
             if (user == null) return HttpNotFound();
             
             // Sync Session data

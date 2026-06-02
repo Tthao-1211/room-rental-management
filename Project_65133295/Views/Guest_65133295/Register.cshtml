@@ -4,8 +4,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 container-max">
+    <div class="sm:mx-auto sm:w-full container-max">
         <img class="mx-auto h-20 w-auto rounded-full border-2 border-primary" src="/public/logo.jpg" alt="ThanhThao Stay">
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create a new account
@@ -18,7 +18,7 @@
         </p>
     </div>
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-lg">
+    <div class="mt-8 container-max">
         <div class="bg-white py-8 px-4 shadow-lg sm:rounded-xl sm:px-10 border border-yellow-100">
             @using (Html.BeginForm("Register", "Guest_65133295", FormMethod.Post, new { @class = "space-y-6" }))
             {
@@ -114,7 +114,7 @@
                 }
 
                 <div>
-                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transform transition hover:scale-105">
+                    <button type="submit" class="w-full btn btn-primary flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium transform transition hover:scale-105">
                         Create Account
                     </button>
                 </div>

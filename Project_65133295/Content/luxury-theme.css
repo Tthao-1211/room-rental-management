@@ -121,6 +121,41 @@ body{ background: var(--color-background); color: var(--color-text-primary); }
 .stat-item .icon i, .service-icon i { font-size:20px; }
 .service-icon{ width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--color-secondary); color:var(--color-primary); margin:0 auto 12px; }
 
+/* Room card hover image zoom */
+.room-card .room-img{ transition:transform .5s ease; }
+.room-card:hover .room-img{ transform:scale(1.06); }
+
+/* CTA gradient used across the site */
+.bg-cta-gradient{ background: linear-gradient(90deg,#7a2b2b,#D7B57A); }
+
+/* Select arrow background for custom styled selects */
+.select-arrow{ background-repeat: no-repeat; background-position: right 1rem center; padding-right:2.5rem; }
+.select-arrow{ background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='m6 8 4 4 4-4' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5'/%3E%3C/svg%3E"); }
+
 /* Animations */
 .slide-up{ transform:translateY(8px); opacity:0; animation:slideUp .6s ease forwards; }
 @keyframes slideUp { to{ transform:none; opacity:1; } }
+
+/* Sidebar navigation (global) */
+.sidebar-item{ color:var(--color-text-primary); display:flex; align-items:center; gap:12px; }
+.sidebar-item:hover{ background: rgba(215,181,122,0.06); color:var(--color-primary); }
+.sidebar-item.active{ background: linear-gradient(90deg, rgba(215,181,122,0.10), rgba(5,59,74,0.02)); color:var(--color-primary); box-shadow: inset 4px 0 0 var(--color-secondary); }
+
+/* Stronger specificity to override Tailwind utility classes when necessary */
+#sidebar .sidebar-item.active{ background: linear-gradient(90deg, rgba(215,181,122,0.12), rgba(5,59,74,0.03)); color:var(--color-primary); box-shadow: inset 4px 0 0 var(--color-secondary); }
+#sidebar .sidebar-item.active svg, #sidebar .sidebar-item.active i{ color:var(--color-secondary); }
+#sidebar .sidebar-item.active .badge{ background:var(--color-secondary); color:var(--color-primary); }
+
+/* Optional helper to hide native scrollbar for sidebar containers */
+.no-scrollbar::-webkit-scrollbar{ display:none; }
+.no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
+
+/* Hide scrollbar but keep scroll functionality (width = 0) */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar { /* Chrome, Safari, Opera */
+  width: 0px;
+  height: 0px;
+}

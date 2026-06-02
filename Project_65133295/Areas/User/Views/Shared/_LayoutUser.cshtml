@@ -56,12 +56,7 @@
     <!-- Font Awesome Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <style>
-        .sidebar-item.active {
-            background-color: #fef9c3;
-            color: #eab308;
-        }
-    </style>
+    <!-- sidebar active styling moved to Content/luxury-theme.css -->
 </head>
 <body class="font-sans bg-background text-text-primary">
     
@@ -90,7 +85,7 @@
                 </div>
                 
                 <!-- Menu Items -->
-                <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+                <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto no-scrollbar">
                     <a href="@Url.Action("Index", "User_65133295", new { area = "User" })" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium text-gray-700 rounded-lg hover:bg-yellow-50 hover:text-primary transition">
                         <svg class="w-5 h-5 mr-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
@@ -204,7 +199,9 @@
             
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto p-6">
-                @RenderBody()
+                <div class="container-max">
+                    @RenderBody()
+                </div>
             </main>
         </div>
     </div>

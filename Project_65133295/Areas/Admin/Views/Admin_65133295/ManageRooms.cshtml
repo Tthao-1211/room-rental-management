@@ -24,7 +24,7 @@
         
         @if (Session["UserRole"]?.ToString() != "NhanVien")
         {
-        <a href="@Url.Action("CreateRoom", "Admin_65133295")" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-dark transition-all">
+        <a href="@Url.Action("CreateRoom", "Admin_65133295")" class="inline-flex items-center btn btn-primary rounded-xl text-sm font-bold px-4 py-2">
             <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             Add New Room
         </a>
@@ -119,7 +119,7 @@
             </div>
             <h3 class="text-lg font-bold text-gray-800">No Rooms Yet</h3>
             <p class="text-gray-500 max-w-xs mx-auto mt-1">Start by adding a new room to your management system.</p>
-            <a href="@Url.Action("CreateRoom", "Admin_65133295")" class="mt-6 inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-bold rounded-xl text-primary-dark bg-primary hover:bg-primary-dark transition-all">
+            <a href="@Url.Action("CreateRoom", "Admin_65133295")" class="mt-6 inline-flex items-center btn btn-primary rounded-xl text-sm font-bold px-4 py-2">
                 Add Now
             </a>
         </div>

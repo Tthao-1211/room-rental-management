@@ -57,21 +57,7 @@
     <!-- Font Awesome Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <style>
-        .sidebar-item.active {
-            background-color: #fef9c3;
-            color: #eab308;
-        }
-
-        /* Hiding scrollbar but keeping scroll functionality */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-    </style>
+    <!-- sidebar active styling moved to Content/luxury-theme.css -->
 </head>
 <body class="font-sans bg-background text-text-primary">
     @{
@@ -87,7 +73,7 @@
         bool CanDashboardAccess = isAdminUser || employeeGroup?.CanViewRoomDashboard == true || employeeGroup?.CanViewRevenueDashboard == true;
     }
     
-    <div class="flex h-screen overflow-hidden">
+    <div class="flex min-h-screen">
         
         <!-- Sidebar (Fixed Left) - Admin Version -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 lg:translate-x-0 -translate-x-full">
@@ -225,7 +211,7 @@
         </aside>
         
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col lg:ml-64 overflow-hidden">
+        <div class="flex-1 flex flex-col lg:ml-64 overflow-auto">
             
             <!-- Top Bar -->
             <header class="bg-white border-b border-gray-200 px-6 py-4">
@@ -273,8 +259,8 @@
                 </div>
             </header>
             
-            <!-- Page Content -->
-            <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+                <!-- Page Content -->
+                <main class="flex-1 px-6 overflow-y-auto hide-scrollbar">
                 @if (TempData["SuccessMessage"] != null)
                 {
                     <div class="mb-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
@@ -287,7 +273,9 @@
                         @TempData["ErrorMessage"]
                     </div>
                 }
-                @RenderBody()
+                    <div class="container-max">
+                        @RenderBody()
+                    </div>
             </main>
         </div>
     </div>

@@ -25,9 +25,9 @@
     <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <p class="text-sm text-gray-500 mt-1">Total: <span class="font-semibold text-primary">@totalUsers</span> users</p>
-            @if (ViewBag.IsAdminUser as bool? == true)
+                @if (ViewBag.IsAdminUser as bool? == true)
             {
-                <a href="@Url.Action("CreateUser", "Admin_65133295")" class="inline-flex items-center mt-3 px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-sm hover:bg-primary-dark transition-all">
+                <a href="@Url.Action("CreateUser", "Admin_65133295")" class="inline-flex items-center mt-3 btn btn-primary rounded-xl text-sm font-bold px-4 py-2 shadow-sm">
                     + Create User
                 </a>
             }
@@ -54,7 +54,7 @@
                        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition-all">
             </div>
             
-            <button type="submit" class="hidden sm:block px-4 py-2 border border-transparent shadow-sm text-sm font-bold rounded-xl text-white bg-primary hover:bg-primary-dark transition-all">
+            <button type="submit" class="hidden sm:block btn btn-primary px-4 py-2 rounded-xl text-sm font-bold shadow-sm">
                 Search
             </button>
         </form>

@@ -74,11 +74,15 @@ namespace Project_65133295.Models.Forms_65133295
                     mail.BodyEncoding = Encoding.UTF8;
 
                     using (SmtpClient smtp = new SmtpClient(host, port))
-                    {
-                        smtp.Credentials = new NetworkCredential(user, pass);
-                        smtp.EnableSsl = true;
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Send(mail);
+                        {
+                            // Ensure modern TLS
+                            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls;
+                            smtp.UseDefaultCredentials = false;
+                            smtp.Credentials = new NetworkCredential(user, pass);
+                            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                            smtp.EnableSsl = true;
+                            smtp.Timeout = 30000; // 30s
+                            smtp.Send(mail);
                     }
                 }
             }
@@ -138,11 +142,15 @@ namespace Project_65133295.Models.Forms_65133295
                     mail.BodyEncoding = Encoding.UTF8;
 
                     using (SmtpClient smtp = new SmtpClient(host, port))
-                    {
-                        smtp.Credentials = new NetworkCredential(user, pass);
-                        smtp.EnableSsl = true;
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Send(mail);
+                        {
+                            // Ensure modern TLS
+                            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls11 | System.Net.SecurityProtocolType.Tls;
+                            smtp.UseDefaultCredentials = false;
+                            smtp.Credentials = new NetworkCredential(user, pass);
+                            smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
+                            smtp.EnableSsl = true;
+                            smtp.Timeout = 30000; // 30s
+                            smtp.Send(mail);
                     }
                 }
             }

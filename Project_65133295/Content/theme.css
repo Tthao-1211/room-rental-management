@@ -1,0 +1,116 @@
+:root{
+    /* Brand palette */
+    --tan: #D8BA98;
+    --maroon: #7F0303;
+    --alabaster: #EFE8DF;
+    --light-blue: #96C0CE;
+    --midnight-blue: #0F414A;
+
+    --text-primary: #0F414A;
+    --text-secondary: #519CAB;
+
+    /* Chart colors (consistent mapping)
+       Revenue -> Maroon
+       Rooms   -> Midnight Blue
+       Contracts-> Tan
+       Employees-> Light Blue
+    */
+    --chart-revenue: var(--maroon);
+    --chart-rooms: var(--midnight-blue);
+    --chart-contracts: var(--tan);
+    --chart-employees: var(--light-blue);
+
+    /* Spacing / radii */
+    --card-radius: 20px;
+}
+
+/* Background */
+body{
+    background: #F7F1EB; /* unified content background */
+    color: var(--text-primary);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Sidebar */
+#sidebar{
+    background: var(--midnight-blue) !important;
+    border-right: 3px solid var(--tan);
+}
+#sidebar .text-primary, #sidebar svg{ color: var(--tan) !important; }
+#sidebar .sidebar-item{ color: var(--light-blue); }
+#sidebar .sidebar-item.active{ background: var(--tan); color: var(--midnight-blue); font-weight:700; }
+#sidebar .sidebar-subtitle{ color: var(--light-blue); }
+#sidebar .logo{ color: #fff; }
+
+/* Navigation */
+.nav-link{ color: var(--light-blue); font-weight:600; }
+.nav-link:hover{ background: rgba(216,186,152,.15); }
+.nav-link.active{ background: var(--tan); color: var(--midnight-blue); font-weight:700; }
+
+/* Header */
+.page-header{ background: var(--light-blue); border-bottom: 3px solid var(--tan); }
+.page-title{ color: var(--midnight-blue); font-weight:800; }
+.page-description{ color: var(--text-secondary); }
+
+/* Cards */
+.card{ background:#fff; border:1px solid rgba(216,186,152,.5); border-radius:var(--card-radius); box-shadow:0 8px 24px rgba(15,65,74,.06); }
+
+/* KPI Cards - explicit, fixed mapping (do not randomize) */
+.kpi-totalrooms{ background: var(--tan); color: var(--midnight-blue); }
+.kpi-occupied{ background: var(--maroon); color: var(--alabaster); }
+.kpi-employees{ background: var(--light-blue); color: var(--midnight-blue); }
+.kpi-revenue{ background: var(--midnight-blue); color: var(--tan); }
+
+/* Backwards-compatible aliases */
+.kpi-tan{ background: var(--light-blue); color: var(--midnight-blue); }
+.kpi-maroon{ background: var(--maroon); color: var(--alabaster); }
+.kpi-lightblue{ background: var(--light-blue); color: var(--midnight-blue); }
+.kpi-midnight{ background: var(--midnight-blue); color: var(--tan); }
+
+.table thead{ background: var(--tan); }
+.table thead th{ color: var(--midnight-blue); font-weight:800; border-bottom:2px solid rgba(0,0,0,.06); }
+.table tbody tr:nth-child(odd){ background:#FFFFFF; }
+.table tbody tr:nth-child(even){ background:#EFE8DF; }
+.table tbody tr:hover{ background:#DDF0F4; }
+
+/* Typography */
+.text-main{ color:var(--midnight-blue); font-weight:800; }
+.text-secondary{ color:var(--text-secondary); font-weight:600; }
+.text-price{ color:var(--maroon); font-weight:800; }
+
+/* Room title and helpers */
+.room-title{ color:var(--midnight-blue); font-weight:800; }
+
+/* Status badges */
+.status-available{ background:var(--light-blue); color:var(--midnight-blue); padding:6px 10px; border-radius:12px; font-weight:600; }
+.status-reserved{ background:var(--tan); color:var(--midnight-blue); padding:6px 10px; border-radius:12px; font-weight:600; }
+.status-occupied{ background:var(--maroon); color:var(--alabaster); padding:6px 10px; border-radius:12px; font-weight:600; }
+
+/* Buttons */
+.btn-primary{ background:var(--maroon); color:#ffffff; border:none; padding:8px 14px; border-radius:8px; }
+.btn-primary:hover{ background:#990707; }
+.btn-secondary{ background:var(--tan); color:var(--midnight-blue); border-radius:8px; padding:8px 14px; }
+
+/* Forms */
+.form-control{ border:1px solid rgba(216,186,152,.6); background:#fff; padding:8px 12px; border-radius:8px; }
+.form-control:focus{ border-color:var(--light-blue); box-shadow:0 0 0 3px rgba(150,192,206,.25); outline:none; }
+
+/* Icons */
+.icon-default{ color:var(--text-secondary); }
+.icon-hover:hover{ color:var(--maroon); }
+
+/* Charts - provide CSS variables for scripts to use (consistent mapping) */
+:root{ --chart-color-revenue: var(--chart-revenue); --chart-color-rooms: var(--chart-rooms); --chart-color-contracts: var(--chart-contracts); --chart-color-employees: var(--chart-employees); }
+
+/* Utility helpers */
+.rounded-card{ border-radius:var(--card-radius); }
+.p-6{ padding:1.5rem; }
+.mb-4{ margin-bottom:1rem; }
+
+/* Ensure admin top bar uses theme */
+header.page-header{ background:var(--alabaster); border-bottom:2px solid var(--tan); }
+
+/* Small responsive tweaks */
+@media (max-width: 768px){
+    #sidebar{ width: 14rem !important; }
+}

@@ -18,7 +18,16 @@ namespace Project_65133295.Controllers
         // View homepage & system information
         public ActionResult Index()
         {
-            return View();
+            // Featured rooms for homepage
+            var featuredRooms = db.Rooms
+                                  .Include(r => r.RoomImages)
+                                  .Include(r => r.RoomStatuses)
+                                  .Where(r => r.StatusID == 1)
+                                  .OrderByDescending(r => r.CreatedAt)
+                                  .Take(4)
+                                  .ToList();
+
+            return View(featuredRooms);
         }
 
         private Project_65133295.Models.DbContext_65133295 db = new Project_65133295.Models.DbContext_65133295();

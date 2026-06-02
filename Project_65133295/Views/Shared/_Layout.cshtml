@@ -27,24 +27,53 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // Custom blue palette per design
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        ice: '#FFFFFF'                    }, 
+                        primary: '#053B4A',
+                        'primary-hover': '#042F3B',
+                        secondary: '#D7B57A',
+                        'secondary-hover': '#C9A46B',
+                        background: '#F8F6F2',
+                        surface: '#FFFFFF',
+                        border: '#E8E3D9',
+                        'text-primary': '#17303A',
+                        'text-secondary': '#5C6B73',
+                        'text-muted': '#8A959C',
+                        success: '#2E7D32',
+                        warning: '#E6A23C',
+                        danger: '#D64545'
+                    },
                     fontFamily: {
-                        sans: ['Inter', 'Roboto', 'sans-serif']
+                        heading: ['"Playfair Display"', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    borderRadius: {
+                        'card': '16px'
+                    },
+                    boxShadow: {
+                        'card-subtle': '0 6px 18px rgba(16,24,40,0.06)'
+                    },
+                    container: {
+                        center: true,
+                        padding: '1rem',
+                        screens: {
+                            lg: '1400px'
+                        }
                     }
                 }
             }
         }
     </script>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="~/Content/luxury-theme.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
@@ -68,78 +97,9 @@
         #mobile-menu-btn { outline: none; }
     </style>
 </head>
-<body class="font-sans bg-white text-gray-700">
+<body class="font-sans bg-background text-text-primary">
     
-    <!-- Navigation Bar - fixed top, 3-column layout per design -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" style="background:#ffffff; height:52px; padding-left:32px; padding-right:32px;">
-        <div class="container mx-auto h-full flex items-center justify-between">
-            <!-- Left: Logo -->
-            <div class="flex items-center gap-3">
-                <a href="@Url.Action("Index", "Guest_65133295")" class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background:#ffffff; border:2px solid #B1C9EF;">
-                        <!-- Mini house icon (white) -->
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-5H9v5H4a1 1 0 0 1-1-1V11.5z" fill="#ffffff"/>
-                        </svg>
-                    </div>
-                    <span class="text-[16px] font-bold" style="color:#004cff;">Thanh Thảo Stay</span>
-                </a>
-            </div>
-
-            <!-- Center: Navigation links -->
-            <div class="flex-1 flex items-center justify-center">
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="@Url.Action("Index", "Guest_65133295")" class="text-[13px] font-bold text-gray-900 uppercase hover:text-gray-400 transition">Home</a>
-                    <a href="@Url.Action("SearchRoom", "Guest_65133295")" class="text-[13px] font-bold text-gray-900 uppercase hover:text-gray-400 transition">Rooms</a>
-                    <a href="@Url.Action("BookingGuide", "Guest_65133295")" class="text-[13px] font-bold text-gray-900 uppercase hover:text-gray-400 transition">Booking Guide</a>
-                </div>
-            </div>
-
-            <!-- Right: Auth Buttons -->
-            <div class="flex items-center space-x-3">
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <a href="@Url.Action("Logout", "Guest_65133295")" class="text-[13px] font-semibold inline-flex items-center justify-center min-w-[80px] rounded-[6px] py-1.5 border-1-5" style="border-color:rgba(0,0,0,0.06); color:#1E3A5F; background:transparent;">
-                        Logout
-                    </a>
-                }
-                else
-                {
-                    <a href="@Url.Action("Login", "Guest_65133295")" class="text-[13px] font-semibold inline-flex items-center justify-center min-w-[80px] rounded-[6px] py-1.5 border-1-5" style="border-color:rgba(0,0,0,0.06); color:#1E3A5F; background:transparent;">
-                        Login
-                    </a>
-                    <a href="@Url.Action("Register", "Guest_65133295")" class="text-[13px] font-semibold inline-flex items-center justify-center min-w-[80px] rounded-[6px] py-1.5" style="border: 1.5px solid rgba(0,0,0,0.06); background: transparent; color: #1E3A5F; ">
-                        Sign Up
-                    </a>
-                }
-                <!-- Mobile menu button -->
-                <button id="mobile-menu-btn" class="ml-2 md:hidden" aria-expanded="false" aria-label="Open menu">
-                    <svg class="w-6 h-6" fill="none" stroke="#1E3A5F" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Menu (same links) -->
-        <div id="mobile-menu" class="hidden md:hidden">
-            <div class="px-4 pb-4 pt-2 flex flex-col space-y-2">
-                <a href="@Url.Action("Index", "Guest_65133295")" class="@GetMobileNavClass("Guest_65133295", "Index")">Home</a>
-                <a href="@Url.Action("SearchRoom", "Guest_65133295")" class="@GetMobileNavClass("Guest_65133295", "SearchRoom")">Rooms</a>
-                <a href="@Url.Action("BookingGuide", "Guest_65133295")" class="@GetMobileNavClass("Guest_65133295", "BookingGuide")">Booking Guide</a>
-                <div class="pt-2 border-t border-   sky/20"></div>
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <a href="@Url.Action("Logout", "Guest_65133295")" class="block px-4 py-2 text-sm font-semibold text-navy bg-ice rounded-lg text-center">Logout</a>
-                }
-                else
-                {
-                    <a href="@Url.Action("Login", "Guest_65133295")" class="block px-4 py-2 text-sm font-semibold text-ice rounded-lg text-center border-1-5" style="border-color:#8AAEE0;">Login</a>
-                    <a href="@Url.Action("Register", "Guest_65133295")" class="block px-4 py-2 text-sm font-semibold text-navy bg-mid rounded-lg text-center">Sign Up</a>
-                }
-            </div>
-        </div>
-    </nav>
+    @Html.Partial("_Navbar")
     
     <!-- Global Error Message (Unauthorized access) -->
     @if (TempData["Error"] != null)
@@ -152,42 +112,52 @@
         </div>
     }
 
-    <!-- Main Content (with top padding for fixed navbar)-->
-    <main class="pt-14">
-        @RenderBody()
+    <!-- Main Content (with top padding for fixed navbar) -->
+    <main class="pt-20">
+        <div class="container-max">
+            @RenderBody()
+        </div>
     </main>
     
-    <!-- Footer (unchanged other than color tokens) -->
-    <footer class="bg-white mt-16 border-t" style="border-top-color: #628ECB;">
-        <div class="container mx-auto px-4 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
-                <div>
-                    <h3 class="text-lg font-bold" style="color:#004cff; margin-bottom:0.5rem;">Thanh Thảo Stay</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">
-                        Trusted room rental management system. Over 500+ quality rooms in Ho Chi Minh City.
-                    </p>
-                </div>
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Links</h3>
-                    <ul class="space-y-2 text-sm text-gray-500">
-                        <li><a href="@Url.Action("Index", "Guest_65133295")" class="hover:text-steel transition">Home</a></li>
-                        <li><a href="@Url.Action("SearchRoom", "Guest_65133295")" class="hover:text-steel transition">Rooms</a></li>
-                        <li><a href="@Url.Action("BookingGuide", "Guest_65133295")" class="hover:text-steel transition">Booking Guide</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Contact</h3>
-                    <ul class="space-y-2 text-sm text-gray-500">
-                        <li class="flex items-center">Hotline: 0764307704</li>
-                        <li class="flex items-center">Email: ptthanhthaoxxx@gmail.com</li>
-                        <li class="flex items-start">02 Đoàn Trần Nghiệp, Vĩnh Phước, TP. Nha Trang</li>
-                    </ul>
+    <!-- Footer -->
+    <footer class="site-footer mt-12">
+        <div class="footer-container">
+            <div>
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                    <div style="width:44px;height:44px;border-radius:9999px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(255,255,255,0.08);">
+                        <img src="~/public/logo.jpg" alt="ThanhThao Stay" style="width:44px;height:44px;object-fit:cover;display:block;" />
+                    </div>
+                    <div>
+                        <div style="font-family:Playfair Display, serif; font-weight:700;">ThanhThao Stay</div>
+                        <div style="opacity:0.9; margin-top:6px; max-width:320px;">Trusted room rental management system delivering premium stays and reliable management tools for property owners and guests.</div>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-gray-200 pt-6 text-center">
-                <p class="text-xs font-light text-gray-500">
-                    &copy; @DateTime.Now.Year Thanh Thảo Stay. All rights reserved.
-                </p>
+
+            <div>
+                <h4>Quick Links</h4>
+                <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+                    <li><a href="@Url.Action("Index", "Guest_65133295")">Home</a></li>
+                    <li><a href="@Url.Action("SearchRoom", "Guest_65133295")">Rooms</a></li>
+                    <li><a href="@Url.Action("BookingGuide", "Guest_65133295")">Booking Guide</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4>Contact</h4>
+                <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;">
+                    <li>Phone: 0764307704</li>
+                    <li>Email: ptthanhthaoxxx@gmail.com</li>
+                    <li>Address: 02 Đoàn Trần Nghiệp, Vĩnh Phước, TP. Nha Trang</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom" style="max-width:1400px;margin:18px auto 0;padding:0 16px;">
+            <div>&copy; @DateTime.Now.Year ThanhThao Stay</div>
+            <div style="display:flex;gap:16px;">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
             </div>
         </div>
     </footer>
@@ -197,22 +167,15 @@
     
     <!-- Custom Scripts -->
     <script>
-        // Sticky Navbar on Scroll (keeps color)
+        // Simple sticky shadow only — do not change navbar background
         window.addEventListener('scroll', function() {
             const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('navbar-scrolled');
-                navbar.classList.remove('glassmorphism');
+            if (!navbar) return;
+            if (window.scrollY > 10) {
+                navbar.classList.add('shadow-md');
             } else {
-                navbar.classList.remove('navbar-scrolled');
-                navbar.classList.add('glassmorphism');
+                navbar.classList.remove('shadow-md');
             }
-        });
-        
-        // Mobile Menu Toggle
-        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
         });
     </script>
     

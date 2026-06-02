@@ -255,6 +255,9 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_Navbar.cshtml" />
+    <Content Include="Views\Shared\_ImageHero.cshtml" />
+    <Content Include="Content\luxury-theme.css" />
     <Content Include="Views\Guest_65133295\Index.cshtml" />
     <Content Include="Views\Guest_65133295\SearchRoom.cshtml" />
     <Content Include="Views\Guest_65133295\RoomDetails.cshtml" />
@@ -265,6 +268,7 @@
     <Content Include="Views\Guest_65133295\BookingGuide.cshtml" />
     <Content Include="Views\Guest_65133295\VerifyEmailInfo.cshtml" />
     <Content Include="Views\Guest_65133295\VerifyEmailResult.cshtml" />
+    <Content Include="Views\Shared\_Card.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

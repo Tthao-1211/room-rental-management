@@ -1,133 +1,174 @@
-﻿@{
+﻿@model IEnumerable<Project_65133295.Models.Room>
+@{
     ViewBag.Title = "Home - ThanhThao Stay";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Hero / Introduction Section -->
-<section class="py-20 bg-white">
-    <div class="container mx-auto px-4 text-center">
-        <h1 class="text-4xl md:text-5xl font-bold text-primary mb-6">
-            ThanhThao Room Management System
-        </h1>
-        <div class="max-w-3xl mx-auto">
-            <p class="text-lg md:text-xl text-gray-600 leading-relaxed mb-8">
-                Welcome to <strong>ThanhThao Stay</strong> – the leading modern and trustworthy room rental search and management solution in Nha Trang. We connect tenants with ideal, comfortable and safe living spaces, while providing effective management tools for property owners.
-            </p>
-            <div class="w-24 h-1 bg-primary mx-auto rounded"></div>
-        </div>
-    </div>
-</section>
-
-<!-- Services Section -->
-<section class="py-16 bg-yellow-50/30">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Our Services</h2>
-            <p class="text-gray-500">Comprehensive solutions for your accommodation needs</p>
+<!-- SECTION 1: HERO -->
+<section class="py-12">
+    <div class="container-max">
+        <div class="hero-wrapper rounded-large overflow-hidden grid">
+            <div class="hero-left">
+                <div class="eyebrow">WELCOME TO</div>
+                <h1 class="hero-title">ThanhThao <span style="color:var(--color-secondary);">Stay</span></h1>
+                <p class="hero-desc">Nền tảng quản lý và tìm kiếm phòng trọ hiện đại tại Nha Trang.</p>
+                <div class="hero-cta">
+                    <a href="@Url.Action("SearchRoom", "Guest_65133295")" class="btn champagne">Explore Rooms</a>
+                    <a href="@Url.Action("BookingGuide", "Guest_65133295")" class="btn outline-white">Book Now</a>
+                </div>
+            </div>
+            <div class="hero-media">
+                <img src="~/public/rooms/HHHH_1.JPG" alt="Căn hộ cao cấp" style="height:520px; width:100%; object-fit:cover;" />
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <!-- Service 1 -->
-            <div class="bg-white p-8 rounded-lg border border-yellow-200 shadow-sm hover:shadow-md transition">
-                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4 text-primary">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
+        <!-- STATS card overlapping hero -->
+        <div class="stat-card card slide-up" style="margin-top:-40px;">
+            <div class="container-max mx-auto flex flex-wrap gap-6 justify-between items-center">
+                <div class="stat-item text-center">
+                    <div class="icon"><i class="fas fa-home"></i></div>
+                    <div class="text-2xl font-bold">120+</div>
+                    <div class="text-sm text-text-secondary">Available Rooms</div>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-3">Room Rentals</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">
-                    Diverse room options from budget-friendly single rooms to premium mini apartments, covering all major areas in Nha Trang.
-                </p>
-            </div>
-
-            <!-- Service 2 -->
-            <div class="bg-white p-8 rounded-lg border border-yellow-200 shadow-sm hover:shadow-md transition">
-                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4 text-primary">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                    </svg>
+                <div class="stat-item text-center">
+                    <div class="icon"><i class="fas fa-users"></i></div>
+                    <div class="text-2xl font-bold">500+</div>
+                    <div class="text-sm text-text-secondary">Happy Customers</div>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-3">Management Operations</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">
-                    Support for contract management, utility billing and related services transparently and professionally through our software system.
-                </p>
-            </div>
-
-            <!-- Service 3 -->
-            <div class="bg-white p-8 rounded-lg border border-yellow-200 shadow-sm hover:shadow-md transition">
-                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4 text-primary">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                    </svg>
+                <div class="stat-item text-center">
+                    <div class="icon"><i class="fas fa-star"></i></div>
+                    <div class="text-2xl font-bold">98%</div>
+                    <div class="text-sm text-text-secondary">Customer Satisfaction</div>
                 </div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-3">Resident Support</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">
-                    Our technical and customer care team is always ready to support repairs, maintenance and resolve any issues 24/7.
-                </p>
+                <div class="stat-item text-center">
+                    <div class="icon"><i class="fas fa-headset"></i></div>
+                    <div class="text-2xl font-bold">24/7</div>
+                    <div class="text-sm text-text-secondary">Support</div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Why Choose Us Section -->
-<section class="py-16 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-800 mb-2">Why Choose ThanhThao Stay?</h2>
-            <p class="text-gray-500">Core values that make us different</p>
+<!-- SECTION 3: OUR SERVICES -->
+<section class="py-16">
+    <div class="container-max">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold">Our Services</h2>
+            <p class="text-text-secondary">Comprehensive solutions</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            <!-- Reason 1 -->
-            <div class="p-6 text-center group">
-                <div class="w-16 h-16 mx-auto bg-primary text-white rounded-full flex items-center justify-center mb-4 text-2xl font-bold group-hover:scale-110 transition">
-                    1
-                </div>
-                <h4 class="text-lg font-bold text-gray-800 mb-2">Trustworthy</h4>
-                <p class="text-sm text-gray-600">
-                    We prioritize integrity with real room information and 100% authentic images.
-                </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="card p-6 text-center hover:translate-y-[-6px] transition-transform">
+                <div class="service-icon"><i class="fas fa-building"></i></div>
+                <h3 class="font-semibold text-lg mb-2">Room Rentals</h3>
+                <p class="text-text-secondary text-sm">Find premium rooms and apartments across Nha Trang.</p>
             </div>
-
-            <!-- Reason 2 -->
-            <div class="p-6 text-center group">
-                <div class="w-16 h-16 mx-auto bg-primary text-white rounded-full flex items-center justify-center mb-4 text-2xl font-bold group-hover:scale-110 transition">
-                    2
-                </div>
-                <h4 class="text-lg font-bold text-gray-800 mb-2">Secure & Safe</h4>
-                <p class="text-sm text-gray-600">
-                    24/7 security system, surveillance cameras and modern fingerprint locks for all areas.
-                </p>
+            <div class="card p-6 text-center hover:translate-y-[-6px] transition-transform">
+                <div class="service-icon"><i class="fas fa-cogs"></i></div>
+                <h3 class="font-semibold text-lg mb-2">Management Operations</h3>
+                <p class="text-text-secondary text-sm">Tools for contracts, billing and tenant management.</p>
             </div>
-
-            <!-- Reason 3 -->
-            <div class="p-6 text-center group">
-                <div class="w-16 h-16 mx-auto bg-primary text-white rounded-full flex items-center justify-center mb-4 text-2xl font-bold group-hover:scale-110 transition">
-                    3
-                </div>
-                <h4 class="text-lg font-bold text-gray-800 mb-2">Competitive Pricing</h4>
-                <p class="text-sm text-gray-600">
-                    Committed to offering the most competitive prices on the market with no hidden charges.
-                </p>
+            <div class="card p-6 text-center hover:translate-y-[-6px] transition-transform">
+                <div class="service-icon"><i class="fas fa-hands-helping"></i></div>
+                <h3 class="font-semibold text-lg mb-2">Resident Support</h3>
+                <p class="text-text-secondary text-sm">24/7 support for maintenance and inquiries.</p>
             </div>
-
-            <!-- Reason 4 -->
-            <div class="p-6 text-center group">
-                <div class="w-16 h-16 mx-auto bg-primary text-white rounded-full flex items-center justify-center mb-4 text-2xl font-bold group-hover:scale-110 transition">
-                    4
-                </div>
-                <h4 class="text-lg font-bold text-gray-800 mb-2">Green Living Space</h4>
-                <p class="text-sm text-gray-600">
-                    Clean, bright living environment with focus on green space and peaceful surroundings.
-                </p>
-            </div>
-        </div>
-        
-        <!-- Call to Action -->
-        <div class="text-center mt-16">
-            <a href="@Url.Action("SearchRoom", "Guest_65133295")" class="inline-block px-8 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition shadow-lg hover:shadow-xl">
-                Explore Rooms Now
-            </a>
         </div>
     </div>
 </section>
+
+<!-- SECTION 4: FEATURED ROOMS -->
+<section class="py-16 bg-surface">
+    <div class="container-max">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-bold">Featured Rooms</h2>
+                <p class="text-text-secondary text-sm">Hand-picked premium listings</p>
+            </div>
+            <a href="@Url.Action("SearchRoom", "Guest_65133295")" class="btn btn-secondary">View All Rooms</a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            @if (Model != null && Model.Any())
+            {
+                foreach(var room in Model)
+                {
+                        var mainImg = room.RoomImages != null && room.RoomImages.Any() ? room.RoomImages.OrderBy(r => r.DisplayOrder).First().ImageUrl.TrimStart('~', '/') : "public/rooms/placeholder.jpg";
+                        var imgUrl = Url.Content("~/" + mainImg);
+                        <div class="card overflow-hidden">
+                            <div class="card-image-wrap">
+                                <img src="@(imgUrl)" alt="@room.Title" style="width:100%;height:180px;object-fit:cover;" />
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-semibold">@room.Title</h3>
+                                <div class="text-sm text-text-secondary">@room.RoomNumber</div>
+                                <div class="mt-3 flex items-center justify-between">
+                                    <div class="text-lg font-bold">@((room.Price).ToString("N0") + " " + room.PriceUnit)</div>
+                                    <a href="@Url.Action("RoomDetails", "Guest_65133295", new { id = room.RoomID })" class="btn btn-secondary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                }
+            }
+            else
+            {
+                <div class="text-text-secondary">No featured rooms available at the moment.</div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 5: WHY CHOOSE US -->
+<section class="py-16" style="background:#F5F3EF;">
+    <div class="container-max">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold">Why Choose Us</h2>
+            <p class="text-text-secondary">Benefits that set us apart</p>
+        </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-primary text-white flex items-center justify-center mb-4"><i class="fas fa-check"></i></div>
+                    <h4 class="font-semibold">Trustworthy</h4>
+                    <p class="text-text-secondary text-sm">Verified listings and transparent information.</p>
+                </div>
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-primary text-white flex items-center justify-center mb-4"><i class="fas fa-lock"></i></div>
+                    <h4 class="font-semibold">Secure & Safe</h4>
+                    <p class="text-text-secondary text-sm">Secure payment and property safeguards.</p>
+                </div>
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-primary text-white flex items-center justify-center mb-4"><i class="fas fa-wallet"></i></div>
+                    <h4 class="font-semibold">Competitive Pricing</h4>
+                    <p class="text-text-secondary text-sm">Transparent rates and no hidden fees.</p>
+                </div>
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-primary text-white flex items-center justify-center mb-4"><i class="fas fa-seedling"></i></div>
+                    <h4 class="font-semibold">Green Living Space</h4>
+                    <p class="text-text-secondary text-sm">Eco-friendly and comfortable environments.</p>
+                </div>
+            </div>
+    </div>
+</section>
+
+<!-- SECTION 6: CTA -->
+<section class="py-16">
+    <div class="container-max">
+        <div class="rounded-large p-8 md:p-12 text-white" style="background:linear-gradient(90deg,#7a2b2b,#D7B57A);">
+            <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
+                <div class="text-left md:w-3/4">
+                    <h3 class="text-3xl font-semibold mb-2">Ready to find your next home?</h3>
+                    <p class="text-sm opacity-90">Browse premium listings curated by ThanhThao Stay and book with confidence.</p>
+                </div>
+                <div class="md:w-auto">
+                    <a href="@Url.Action("SearchRoom", "Guest_65133295")" class="btn btn-primary">Explore Rooms Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@@keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+</style>

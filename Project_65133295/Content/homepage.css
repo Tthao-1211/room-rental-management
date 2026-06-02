@@ -1,0 +1,85 @@
+/* Homepage custom styles per design brief */
+:root{
+  --dark-teal: #0F414A;
+  --dark-teal-2: #174F5C;
+  --accent-gold: #DBBA98;
+  --cta-burgundy: #7F0303;
+  --bg: #F8F6F2;
+  --white: #FFFFFF;
+  --text-dark: #1F2937;
+  --text-secondary: #6B7280;
+  --radius: 20px;
+  --shadow: 0 10px 40px rgba(0,0,0,0.08);
+}
+
+body.homepage{ background: var(--bg); color:var(--text-dark); font-family: 'Poppins', sans-serif; }
+
+/* Navbar */
+#navbar{ background: linear-gradient(90deg,var(--dark-teal),var(--dark-teal-2)); backdrop-filter: blur(6px); }
+#navbar .nav-link{ color: rgba(255,255,255,0.9); text-decoration:none; font-weight:700; letter-spacing:1px; }
+#navbar .nav-link:hover{ color: var(--accent-gold); }
+#navbar .nav-link.active{ border-bottom:2px solid var(--accent-gold); padding-bottom:6px; color:var(--accent-gold); }
+.btn-logout{ border:1px solid rgba(255,255,255,0.3); color:var(--white); padding:8px 12px; border-radius:12px; text-decoration:none; }
+
+/* Hero */
+.hero{ height:700px; position:relative; overflow:hidden; }
+.hero-inner{ display:flex; align-items:center; height:100%; }
+.hero-left{ width:45%; padding:60px; color:var(--white); }
+.hero-right{ width:55%; height:100%; }
+.hero-overlay{ background: linear-gradient(180deg, rgba(15,65,74,0.9), rgba(23,79,92,0.6)); position:absolute; inset:0; z-index:0; }
+.hero .small-label{ color:var(--accent-gold); font-weight:700; letter-spacing:2px; }
+.hero h1{ font-size:72px; line-height:0.9; font-weight:800; margin:10px 0; }
+.hero h1 .highlight{ color:var(--accent-gold); }
+.hero .divider{ width:50px; height:4px; background:var(--accent-gold); margin:20px 0; border-radius:4px; }
+.hero p{ color:rgba(255,255,255,0.9); max-width:450px; }
+.hero .cta{ margin-top:30px; }
+.btn-primary-gold{ background:var(--accent-gold); color:var(--dark-teal); padding:12px 22px; border-radius:12px; font-weight:700; box-shadow:var(--shadow); text-decoration:none; }
+.btn-ghost{ background:transparent; color:rgba(255,255,255,0.95); border:1px solid rgba(255,255,255,0.4); padding:12px 22px; border-radius:12px; text-decoration:none; margin-left:12px; }
+
+.hero-image{ width:100%; height:100%; object-fit:cover; }
+
+/* Stats bar floating */
+.stats-bar{ position:absolute; left:50%; transform:translateX(-50%); bottom:-40px; background:var(--dark-teal); color:var(--white); padding:18px; border-radius:20px; box-shadow:var(--shadow); width:90%; max-width:1200px; z-index:5; }
+.stats-bar .stat{ text-align:center; }
+.stats-bar .stat .icon{ color:var(--accent-gold); font-size:24px; }
+.stats-bar .stat .num{ color:var(--accent-gold); font-weight:800; font-size:20px; }
+.stats-bar .stat .label{ color:var(--white); font-size:13px; }
+
+/* Services */
+.services{ padding:80px 0; background:var(--bg); }
+.services .card{ background:var(--white); border-radius:var(--radius); padding:32px; box-shadow:var(--shadow); transition:all .3s ease; }
+.services .card:hover{ transform:translateY(-10px); }
+.services .icon-circle{ width:64px; height:64px; border-radius:50%; background:rgba(219,186,152,0.15); display:flex; align-items:center; justify-content:center; color:var(--accent-gold); font-size:24px; }
+
+/* Featured rooms */
+.featured{ padding:80px 0; }
+.room-card{ background:var(--white); border-radius:16px; overflow:hidden; box-shadow:var(--shadow); transition:all .3s ease; }
+.room-card:hover{ transform:translateY(-8px); }
+.room-card .room-img{ width:100%; height:180px; object-fit:cover; }
+.room-card .room-body{ padding:16px; }
+.room-card .price{ color:#B91C1C; font-weight:800; }
+.btn-teal{ background:var(--dark-teal); color:var(--white); padding:8px 12px; border-radius:10px; text-decoration:none; }
+
+/* Why choose us */
+.why{ padding:80px 0; background:#F5F0E8; }
+.why .box{ background:var(--white); border-radius:16px; padding:24px; box-shadow:var(--shadow); }
+
+/* CTA banner */
+.cta-banner{ height:160px; background: linear-gradient(180deg, rgba(127,3,3,0.85), rgba(127,3,3,0.6)); color:var(--accent-gold); display:flex; align-items:center; justify-content:space-between; padding:24px; border-radius:12px; margin:40px 0; }
+.cta-banner .btn-gold{ background:var(--accent-gold); color:var(--dark-teal); padding:12px 20px; border-radius:12px; font-weight:700; text-decoration:none; }
+
+/* Footer */
+.footer{ background:var(--dark-teal); color:var(--white); padding:60px 0; }
+.footer a{ color:var(--accent-gold); }
+
+/* Responsive */
+@media (max-width: 991px){
+  .hero-left{ width:100%; }
+  .hero-right{ display:none; }
+  .hero{ height:auto; padding:60px 0; }
+  .stats-bar{ position:static; transform:none; margin-top:20px; }
+}
+
+@media (max-width: 576px){
+  .hero h1{ font-size:40px; }
+}

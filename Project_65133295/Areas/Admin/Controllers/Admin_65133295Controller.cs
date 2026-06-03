@@ -1551,22 +1551,34 @@ namespace Project_65133295.Areas.Admin.Controllers
                 .AsQueryable();
 
             string normalizedRole = (role ?? string.Empty).Trim().ToLowerInvariant();
-            switch (normalizedRole)
+
+            // Default to showing customers when no role filter is provided
+            if (string.IsNullOrEmpty(normalizedRole))
             {
-                case "true":
-                case "customer":
-                case "user":
-                case "khach":
-                    usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.Khach);
-                    break;
-                case "false":
-                case "admin":
-                    usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.Admin);
-                    break;
-                case "staff":
-                case "nhanvien":
-                    usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.NhanVien);
-                    break;
+                usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.Khach);
+            }
+            else
+            {
+                switch (normalizedRole)
+                {
+                    case "true":
+                    case "customer":
+                    case "user":
+                    case "khach":
+                        usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.Khach);
+                        break;
+                    case "false":
+                    case "admin":
+                        usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.Admin);
+                        break;
+                    case "staff":
+                    case "nhanvien":
+                        usersQuery = usersQuery.Where(u => u.Role == Project_65133295.Models.UserRole.NhanVien);
+                        break;
+                    default:
+                        // nếu không khớp thì để nguyên hoặc gán mặc định
+                        break;
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(query))
@@ -1603,6 +1615,7 @@ namespace Project_65133295.Areas.Admin.Controllers
 
             return View(users);
         }
+
 
         public ActionResult UserDetails(int id)
         {

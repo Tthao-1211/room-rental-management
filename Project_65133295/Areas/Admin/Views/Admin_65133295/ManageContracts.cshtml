@@ -61,11 +61,12 @@
             <a href="@Url.Action("ManageContracts")" class="px-6 py-2 bg-gray-100 text-gray-600 font-medium rounded-lg hover:bg-gray-200 transition-colors text-center">
                 Refresh
             </a>
+            <button type="button" onclick="printContracts()" class="px-6 py-2 bg-white border border-gray-200 text-gray-600 font-medium rounded-lg hover:bg-gray-50 transition-colors">In / Print</button>
         </form>
     </div>
 
     <!-- Contracts Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div id="contractsPrintable" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead class="bg-gray-50 border-b border-gray-100">
@@ -199,5 +200,59 @@
                 document.getElementById('checkoutForm').submit();
             }
         });
+    }
+
+    function printContracts() {
+        var el = document.getElementById('contractsPrintable');
+        if (!el) { alert('Printable area not found'); return; }
+
+        // Clone and sanitize: remove Actions column and unwanted buttons/links
+        var clone = el.cloneNode(true);
+        var table = clone.querySelector('table');
+        if (table) {
+            // find actions column index by header text
+            var ths = table.querySelectorAll('thead th');
+            var actionIndex = -1;
+            for (var i = 0; i < ths.length; i++) {
+                var txt = (ths[i].textContent || '').trim().toLowerCase();
+                if (txt === 'actions' || txt === 'action' || txt.indexOf('action') !== -1) { actionIndex = i; break; }
+            }
+            if (actionIndex >= 0) {
+                // remove header cell
+                ths[actionIndex].parentNode.removeChild(ths[actionIndex]);
+                // remove corresponding td in each row
+                var rows = table.querySelectorAll('tbody tr');
+                rows.forEach(function (row) {
+                    var cells = row.querySelectorAll('td');
+                    if (cells.length > actionIndex) row.removeChild(cells[actionIndex]);
+                });
+            }
+
+            // remove any remaining action buttons or icons inside table
+            table.querySelectorAll('button, a').forEach(function (n) {
+                // remove buttons and links that contain only icons or are action controls
+                var hasText = (n.textContent || '').trim().length > 0;
+                var hasSVG = n.querySelector && n.querySelector('svg');
+                if (!hasText || hasSVG) {
+                    if (n.parentNode) n.parentNode.removeChild(n);
+                }
+            });
+        }
+
+        var printable = '<div style="font-family: Arial, Helvetica, sans-serif; font-size:12px;">'
+            + '<h3 style="text-align:center; margin-bottom:10px;">Danh sách hợp đồng</h3>'
+            + clone.innerHTML + '</div>';
+
+        var head = '<title>Danh sách hợp đồng</title>' +
+            '<link rel="stylesheet" href="/Content/bootstrap.min.css">' +
+            '<link rel="stylesheet" href="/Content/Site.css">' +
+            '<link rel="stylesheet" href="/Content/luxury-theme.css">' +
+            '<style>table{width:100%;border-collapse:collapse} th,td{padding:8px;border-bottom:1px solid #eee;} @@media print { a{display:none} }</style>';
+
+        var printWindow = window.open('', '', 'height=800,width=1000');
+        printWindow.document.write('<html><head>' + head + '</head><body>' + printable + '</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(function () { printWindow.print(); printWindow.close(); }, 500);
     }
 </script>
